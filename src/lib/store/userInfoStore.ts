@@ -1,12 +1,12 @@
-import { writable } from 'svelte/store';
-import type { IMyUserinfo } from '$lib/type/user';
+import { writable } from "svelte/store";
+import type { IMyUserinfo } from "$lib/type/user";
 
 const initialUserinfo: IMyUserinfo = {
-  userName: '',
+  userName: "",
   role: [],
-  userId: '',
+  userId: "",
   banned: false,
-  channelJoined: []
+  channelJoined: [],
 };
 
 export const userStore = writable<IMyUserinfo>(initialUserinfo);
