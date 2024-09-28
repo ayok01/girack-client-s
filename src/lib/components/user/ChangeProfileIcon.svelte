@@ -57,11 +57,18 @@
 
     //モーダル表示変数が有効ならモーダル表示
     $: if (displayChangeProfileIcon.value) {
-        document.getElementById("my_modal_1")?.showModal();
+        (document.getElementById("my_modal_1") as HTMLDialogElement)?.showModal();
     }
 
     $: if (fileIcon) {
         console.log("ChangeProfileIcon :: watch(fileIcon) : fileIcon->", fileIcon);
+    }
+    
+    const handleFileInput = (event: Event) => {
+        const target = event.target as HTMLInputElement;
+        if (target.files && target.files.length > 0) {
+            fileIcon = target.files[0];
+        }
     }
 </script>
 
@@ -72,7 +79,7 @@
 
         {#if uploadResult !== "success"} 
             <input
-                on:input={event => fileIcon = event.target?.files[0]}
+                on:input={handleFileInput}
                 accept="image/png, image/jpeg, image/gif"
                 type="file"
                 class="file-input file-input-bordered w-full my-2"
