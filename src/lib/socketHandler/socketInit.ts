@@ -1,7 +1,8 @@
 import { type Socket, io } from "socket.io-client"; //ウェブソケット通信用
+import { PUBLIC_BACKEND_ADDRESS } from "$env/static/public";
 
 //Socket接続
-export const socket: Socket = io({
+export const socket: Socket = io(PUBLIC_BACKEND_ADDRESS, {
   path: "/socket.io",
   reconnection: true,
   reconnectionDelay: 100,
