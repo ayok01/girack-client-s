@@ -1,5 +1,6 @@
 <script lang="ts">
     import Login from "$lib/components/auth/Login.svelte";
+    import Register from "$lib/components/auth/Register.svelte";
 
     let viewMode: "login" | "register" = "login";
 </script>
@@ -19,6 +20,6 @@
     {#if viewMode === "login"}
         <Login />
     {:else}
-        <p>登録用枠</p>
+        <Register />
     {/if}
 </div>
