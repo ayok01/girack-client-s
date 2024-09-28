@@ -62,7 +62,7 @@
     {/each}
   </div>
   
-  <div class="flex p-4 border-t border-gray-300">
+  <div class="flex p-4">
     <input
       type="text"
       bind:value={newMessageText}
