@@ -10,4 +10,4 @@ const initialUserinfo: IMyUserinfo = {
 };
 
 export const userStore = writable<IMyUserinfo>(initialUserinfo);
-export const sesssionIdStore = writable<string>("");
+export const sessionIdStore = writable<string>("");

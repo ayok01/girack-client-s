@@ -1,13 +1,14 @@
 <script lang="ts">
+  import Input from "$lib/components/chat/Input.svelte";
   import { get } from "svelte/store";
   import { page } from "$app/stores";
   import { socket } from "$lib/socketHandler/socketInit";
-  import { userStore, sesssionIdStore } from "$lib/store/userInfoStore";
+  import { userStore, sessionIdStore } from "$lib/store/userInfoStore";
   import { chatStore } from "$lib/store/messageStore";
   import { onMount } from "svelte";
 
   const getUserInfo = get(userStore);
-  const getSesssionIdStore = get(sesssionIdStore);
+  const getsessionIdStore = get(sessionIdStore);
 
   onMount(() => {
     const path = window.location.pathname;
@@ -33,7 +34,7 @@
     socket.emit("fetchHistory", {
       RequestSender: {
         userId: getUserInfo.userId,
-        sessionId: getSesssionIdStore,
+        sessionId: getsessionIdStore,
       },
       channelId: channelId,
       fetchingPosition: {
@@ -93,15 +94,6 @@
   </div>
 
   <div class="flex p-4">
-    <input
-      type="text"
-      bind:value={newMessageText}
-      placeholder="Type your message..."
-      class="flex-grow p-2 border rounded-l-lg"
-    />
-    <button
-      on:click={sendMessage}
-      class="p-2 bg-blue-500 text-white rounded-r-lg">Send</button
-    >
+    <Input />
   </div>
 </div>

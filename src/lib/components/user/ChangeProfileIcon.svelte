@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { sesssionIdStore, userStore } from "$lib/store/userInfoStore";
+  import { sessionIdStore, userStore } from "$lib/store/userInfoStore";
   import { PUBLIC_BACKEND_ADDRESS } from "$env/static/public";
 
   //prop
@@ -25,7 +25,7 @@
 
     const metadata = {
       userId: $userStore.userId,
-      sessionId: $sesssionIdStore,
+      sessionId: $sessionIdStore,
     };
 
     //画像ファイルを格納

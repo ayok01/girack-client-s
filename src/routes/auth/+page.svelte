@@ -4,7 +4,7 @@
   import Login from "$lib/components/auth/Login.svelte";
   import Register from "$lib/components/auth/Register.svelte";
   import { onDestroy, onMount } from "svelte";
-  import { sesssionIdStore, userStore } from "$lib/store/userInfoStore";
+  import { sessionIdStore, userStore } from "$lib/store/userInfoStore";
   import { get } from "svelte/store";
 
   let viewMode: "login" | "register" = "login";
@@ -60,7 +60,7 @@
       cookieAuthData.userId = cookieUserId;
       //あらかじめ認証情報を自分情報用のStoreへ登録
       userStore.set({ ...get(userStore), userId: cookieAuthData.userId });
-      sesssionIdStore.set(cookieAuthData.sessionId);
+      sessionIdStore.set(cookieAuthData.sessionId);
 
       socket.emit("authSession", {
         userId: cookieUserId,
