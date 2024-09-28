@@ -12,9 +12,13 @@ export const socket: Socket = io(PUBLIC_BACKEND_ADDRESS, {
 import connect from "./connect";
 import disconnect from "./disconnect";
 
+import fetchUserInfo from "./User/fetchUserInfo";
+
 export function loadSocket() {
   console.log("socketInit :: loadSockert : SocketIO接続をロードします");
 
   connect(socket); //接続の検知
   disconnect(socket); //切断の検知
+
+  fetchUserInfo(socket); //ユーザー情報の受け取り
 }

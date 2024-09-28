@@ -43,6 +43,11 @@
                 dat.data.UserInfo
             );
 
+            //クッキー書き込む
+            document.cookie = "userId=" + dat.data.UserInfo.userId + "; SameSite=strict;";
+            document.cookie = "sessionId=" + dat.data.sessionId + "; SameSite=strict;";
+
+            //トップに移動する
             goto("/");
         } else {
             //処理中状態を解除
