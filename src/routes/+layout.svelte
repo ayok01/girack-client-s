@@ -1,5 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
+    import "../app.css";
+    import { page } from "$app/stores";
 
     export const ssr = false;
 
@@ -40,15 +42,9 @@
             }
         }
     };
-
-    import "../app.css";
-
-    onMount(() => {
-        console.log("+layout :: トップ", location);
-    });
 </script>
 
-{#if !location.pathname.startsWith("/auth")}
+{#if !$page.route.id?.startsWith('/auth')}
     <button on:click={sidebarCloseButtonClick} id="sidever-dialog" type="button" aria-label="Close sidebar"></button>
     <button on:click={sidebarButtonClick} data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar" type="button" class="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
         <span class="sr-only">Open sidebar</span>
