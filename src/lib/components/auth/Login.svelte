@@ -1,7 +1,5 @@
 <div class="card bg-base-200 shadow-xl">
     <div class="card-body">
-        <h2 class="card-title">ログイン</h2>
-
         <div class="flex flex-col gap-2">
             
             <p>ユーザー名</p>
