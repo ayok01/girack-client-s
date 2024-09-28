@@ -1,16 +1,17 @@
-export interface IGetchannelList {
-  name: string;
-  id: string;
-}
-
-export interface channelOrder {
+/**
+ * @description チャンネルの順序を取得するための型
+ */
+export interface IChannelOrder {
   channelId: string;
   isThread: boolean;
   isFolder: boolean;
-  child?: channelOrder[];
+  child?: IChannelOrder[];
 }
 
-export interface channel {
+/**
+ * @description チャンネルの情報を取得するための型
+ */
+export interface IChannel {
   channelId: string;
   channelName: string;
   createdBy: string;
