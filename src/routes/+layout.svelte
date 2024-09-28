@@ -4,7 +4,7 @@
   import { onMount } from "svelte";
   import { loadSocket } from "$lib/socketHandler/socketInit";
 
-  export const ssr = false;
+  //export const ssr = false;
 
   const sidebarButtonClick = (event: MouseEvent) => {
     const sidebarElement = document.getElementById("default-sidebar");
