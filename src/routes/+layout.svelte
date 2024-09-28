@@ -4,9 +4,11 @@
   import { onMount } from "svelte";
   import { loadSocket } from "$lib/socketHandler/socketInit";
   import Header from "$lib/components/Header.svelte";
+  import { userStore } from '$lib/store/userInfoStore';
+  import { get } from 'svelte/store';
+  import { goto } from '$app/navigation';
 
-  //export const ssr = false;
-
+  
   const sidebarButtonClick = (event: MouseEvent) => {
     const sidebarElement = document.getElementById("default-sidebar");
     if (sidebarElement) {
@@ -33,7 +35,11 @@
 
   //ロードし終えたらSocket接続準備用関数を実行
   onMount(() => {
-    loadSocket();
+    const userInfo = get(userStore);
+        if (!userInfo.userId) {
+            goto('/auth');
+        }
+        loadSocket();
   });
 </script>
 
