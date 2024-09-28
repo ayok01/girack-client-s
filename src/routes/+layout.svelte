@@ -1,6 +1,8 @@
 <script lang="ts">
   import "../app.css";
   import { page } from "$app/stores";
+  import { onMount } from "svelte";
+  import { loadSocket } from "$lib/socketHandler/socketInit";
 
   export const ssr = false;
 
@@ -27,6 +29,11 @@
       }
     }
   };
+
+  //ロードし終えたらSocket接続準備用関数を実行
+  onMount(() => {
+    loadSocket();
+  });
 </script>
 
 {#if !$page.route.id?.startsWith('/auth')}
