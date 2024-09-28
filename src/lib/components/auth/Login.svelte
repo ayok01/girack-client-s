@@ -14,7 +14,7 @@
             <p>パスワード</p>
             <input
                 type="text"
-                placeholder="ユーザー名"
+                placeholder="password..."
                 class="input input-bordered w-full"
             />
 
