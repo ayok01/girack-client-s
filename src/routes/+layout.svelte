@@ -54,6 +54,6 @@
     </aside>
 {/if}
 
-<div class="p-4 sm:ml-64">
+<div class={ !$page.route.id?.startsWith('/auth') ? "p-4 sm:ml-64" : "p-4" }>
     <slot/>
 </div>
