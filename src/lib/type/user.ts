@@ -5,12 +5,3 @@ export interface IMyUserinfo {
   banned: boolean; //BANされたかどうか
   channelJoined: string[]; //参加しているチャンネル
 }
-
-export interface IGirakAuthInfo {
-  result: boolean;
-  userid: string;
-  username: string;
-  sessionid: string;
-  role: string;
-  channelJoined: [string];
-}

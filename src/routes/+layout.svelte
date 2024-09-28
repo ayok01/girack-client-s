@@ -42,10 +42,12 @@
     <div class="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
       <ul class="space-y-2 font-medium">
         <li>
-          <span class="ms-3">チャンネルリスト</span>
+          <span class="ms-3">
+            <a href="/chat">チャンネル一覧</a>
+          </span>
         </li>
         <li>
-          <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+          <a href="/chat/1" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
             <span class="flex-1 ms-3 whitespace-nowrap">test</span>
           </a>
         </li>
