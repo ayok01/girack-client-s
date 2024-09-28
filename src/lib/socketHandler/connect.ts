@@ -2,7 +2,7 @@ import type { Socket } from "socket.io-client";
 
 /**
  * WS接続の検知する
- * @param socket 
+ * @param socket
  */
 export default function connect(socket: Socket) {
   socket.on("connect", () => {

@@ -3,7 +3,7 @@ import type { Socket } from "socket.io-client"; //クラス識別用
 
 /**
  * WSサーバーからの切断を検知
- * @param socket 
+ * @param socket
  */
 export default function disconnect(socket: Socket): void {
   socket.on("disconnect", () => {
