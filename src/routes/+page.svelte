@@ -1,4 +1,10 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
-<button class="btn btn-primary">Button</button>
+<script>
+    import {goto} from '$app/navigation';
+    import {userStore} from '$lib/store/userInfoStore';
+    import {get} from 'svelte/store';
+
+    const userInfo = get(userStore);
+    goto('/chat/' + userInfo.channelJoined[0]);
+</script>
+
 

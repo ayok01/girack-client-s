@@ -28,6 +28,12 @@
                 },
                 userId: cookieAuthData.userId
             });
+            socket.emit("fetchChannelList", {
+                RequestSender: {
+                    userId: cookieAuthData.userId,
+                    sessionId: cookieAuthData.sessionId
+                }
+            });
             //トップへ移動
             goto("/");
         }

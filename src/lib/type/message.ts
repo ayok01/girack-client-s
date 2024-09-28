@@ -57,3 +57,12 @@ export interface ISystemMessageContent {
   targetUserId: string | null;
   senderUserId: string;
 }
+
+export interface IChatHistory {
+  channelId: string;
+  historyData: {
+    history: IMessage[];
+    atTop: boolean;
+    atEnd: boolean;
+  };
+}

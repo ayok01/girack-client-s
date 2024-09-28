@@ -10,7 +10,7 @@ export interface IFile {
   isDelete: boolean;
 }
 
-export interface folder {
+export interface IFolder {
   id: string;
   userId: string;
   name: string;

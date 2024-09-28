@@ -13,6 +13,8 @@ import connect from "./connect";
 import disconnect from "./disconnect";
 
 import fetchUserInfo from "./User/fetchUserInfo";
+import fetchChannelList from "./Channel/fetchCannelList";
+import fetchHistory from "./message/fetchMessage";
 
 export function loadSocket() {
   console.log("socketInit :: loadSockert : SocketIO接続をロードします");
@@ -21,4 +23,6 @@ export function loadSocket() {
   disconnect(socket); //切断の検知
 
   fetchUserInfo(socket); //ユーザー情報の受け取り
+  fetchChannelList(socket); //チャンネル一覧の受け取り
+  fetchHistory(socket); //メッセージの受け取り
 }
