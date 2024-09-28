@@ -1,19 +1,21 @@
 <script lang="ts">
   import "../app.css";
   import { page } from "$app/stores";
+  import { onMount } from "svelte";
+  import { loadSocket } from "$lib/socketHandler/socketInit";
 
-  export const ssr = false;
+  //export const ssr = false;
 
   const sidebarButtonClick = (event: MouseEvent) => {
-      const sidebarElement = document.getElementById("default-sidebar");
-      if (sidebarElement) {
-          sidebarElement.classList.remove("-translate-x-full");
-          sidebarElement.classList.add("transform-none");
-          const sideverDialog = document.getElementById("sideder-dialog");
-          if (sideverDialog) {
-              sideverDialog.classList.add("bg-gray-900/50", "dark:bg-gray-900/80", "fixed", "inset-0", "z-30");
-          }
+    const sidebarElement = document.getElementById("default-sidebar");
+    if (sidebarElement) {
+      sidebarElement.classList.remove("-translate-x-full");
+      sidebarElement.classList.add("transform-none");
+      const sideverDialog = document.getElementById("sideder-dialog");
+      if (sideverDialog) {
+        sideverDialog.classList.add("bg-gray-900/50", "dark:bg-gray-900/80", "fixed", "inset-0", "z-30");
       }
+    }
   };
 
   const sidebarCloseButtonClick = (event: MouseEvent) => {
@@ -23,10 +25,15 @@
       sidebarElement.classList.add("-translate-x-full");
       const sideverDialog = document.getElementById("sideder-dialog");
       if (sideverDialog) {
-          sideverDialog.classList.remove("bg-gray-900/50", "dark:bg-gray-900/80", "fixed", "inset-0", "z-30");
+        sideverDialog.classList.remove("bg-gray-900/50", "dark:bg-gray-900/80", "fixed", "inset-0", "z-30");
       }
     }
   };
+
+  //ロードし終えたらSocket接続準備用関数を実行
+  onMount(() => {
+    loadSocket();
+  });
 </script>
 
 {#if !$page.route.id?.startsWith('/auth')}
