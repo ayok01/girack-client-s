@@ -7,6 +7,7 @@
     
     let username = "";
     let password = "";
+    let processing = false; //認証処理中かどうか
     let result: "success"|"error"|"" = ""; //認証結果受け取り用
 
     /**
@@ -14,6 +15,7 @@
      */
     const login = () => {
         console.log("送るデータ->", username, password);
+        processing = true;
         socket.emit("authLogin", {
             username: username,
             password: password
@@ -43,6 +45,8 @@
 
             goto("/");
         } else {
+            //処理中状態を解除
+            processing = false;
             //エラーと設定
             result = "error";
         }
@@ -80,8 +84,11 @@
                 <button
                     on:click={login}
                     class="btn btn-block btn-primary"
-                    disabled={username==="" || password===""}
-                >ログイン</button>
+                    disabled={username==="" || password==="" || processing}
+                >
+                    {#if processing}<span class="loading loading-spinner" />{/if}
+                    ログイン
+                </button>
             </div>
 
             {#if result === "error"}
