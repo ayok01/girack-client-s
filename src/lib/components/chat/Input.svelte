@@ -1,7 +1,8 @@
 <script lang="ts">
     import { socket } from "$lib/socketHandler/socketInit";
-
-    let message = "";
+    
+    const channelId = path.split('/').pop()?.toString(); //チャンネルId
+    let message = ""; //メッセージ入力用
 
 </script>
 
