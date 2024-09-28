@@ -53,6 +53,30 @@
     }
     loadSocket();
   });
+
+  let channelName: string = "";
+
+  $: {
+    const path = $page.url.pathname;
+    const getCannelStore = get(channelStore);
+    const slug = path.split("/").pop()?.toString();
+    if (slug && path === "/chat/" + slug) {
+      const channel = getCannelStore.find(
+        (channel) => channel.channelId === slug,
+      );
+      if (channel) {
+        channelName = channel.channelName;
+      } else {
+        channelName = "";
+      }
+    } else if (path === "/chat") {
+      channelName = "チャンネル一覧";
+    } else if (path === "/user/1") {
+      channelName = "ユーザー情報";
+    } else {
+      channelName = "";
+    }
+  }
 </script>
 
 {#if !$page.route.id?.startsWith("/auth")}
@@ -81,7 +105,7 @@
         ></path>
       </svg>
     </button>
-    <Header channelName="チャンネル名" />
+    <Header {channelName} />
   </div>
 
   <aside
@@ -102,6 +126,7 @@
               <li>
                 <a
                   href={`/chat/${channel.channelId}`}
+                  on:click={sidebarCloseButtonClick}
                   class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
                 >
                   <span class="flex-1 ms-3 whitespace-nowrap"
@@ -115,7 +140,11 @@
       </div>
       <div class="mt-4">
         <!-- ユーザー情報 -->
-        <a href="/user/{1}" class="flex items-center">
+        <a
+          on:click={sidebarCloseButtonClick}
+          href="/user/{1}"
+          class="flex items-center"
+        >
           <img src="/bot.png" alt="Avatar" class="w-8 h-8 rounded-full mr-2" />
           <div>
             <p class="font-bold">{$userStore.userName}</p>
