@@ -32,8 +32,6 @@
         return store;
       });
     });
-
-    receiveMessage(socket);
     scroolBottom();
   });
 
