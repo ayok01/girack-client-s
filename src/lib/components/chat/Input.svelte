@@ -1,9 +1,10 @@
 <script lang="ts">
   import { socket } from "$lib/socketHandler/socketInit";
+  import { page } from "$app/stores";
   import { userStore, sessionIdStore } from "$lib/store/userInfoStore";
   import { get } from "svelte/store";
 
-  const channelId = window.location.pathname.split("/").pop()?.toString(); //チャンネルId
+  const channelId = $page.route.id;
   let message = ""; //メッセージ入力用
 
   /**
