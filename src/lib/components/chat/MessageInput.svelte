@@ -19,7 +19,7 @@
         chatContainer.scrollTop = chatContainer.scrollHeight;
         console.log("scrollIntoView", chatContainer.scrollTop);
       }
-    }, 10);
+    }, 8);
   };
 
   /**

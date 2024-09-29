@@ -84,7 +84,7 @@
       if ($chatStore.historyData.atTop) {
         return;
       }
-      scroolMessageId();
+      scrollMessageId();
       fetchHistory(channelId, "older", currentMessage);
     } else if (
       element.scrollHeight - element.scrollTop ===
@@ -99,28 +99,21 @@
   };
 
   // 会話履歴を取得した時にスクロール位置を指定できるように
-  const scroolMessageId = () => {
+  const scrollMessageId = () => {
     const chatContainer = document.getElementById("chatContainer");
     // 一番上のメッセージを取得
-    /**
-     * <div id="chatContainer">
-     *   <div>
-     *    <div>メッセージ1</div>
-     *   <div>
-     * </div>
-     */
-    const chatContainerTop = chatContainer?.firstElementChild?.lastElementChild;
-    if (chatContainerTop) {
-      console.log("chatContainerTop", chatContainerTop);
-      setTimeout(() => {
-        // conatinerの高さを取得
-        const containerHeight = chatContainer.clientHeight;
-        // 一番上のメッセージの高さを取得
-        const topHeight = chatContainerTop.clientHeight;
-        //　スクロール
-        console.log("scrollIntoView", containerHeight - topHeight + 56);
-        chatContainer.scrollTop = containerHeight - topHeight;
-      }, 10);
+    if (chatContainer) {
+      const chatContainerTopElement = chatContainer?.firstElementChild
+        ?.lastElementChild as HTMLElement;
+      if (chatContainerTopElement) {
+        console.log("chatContainerTop", chatContainerTopElement);
+        const previousScrollHeight = chatContainer.scrollHeight;
+        setTimeout(() => {
+          const newScrollHeight = chatContainer.scrollHeight;
+          const scrollDifference = newScrollHeight - previousScrollHeight;
+          chatContainer.scrollTop += scrollDifference;
+        }, 10);
+      }
     }
   };
 
