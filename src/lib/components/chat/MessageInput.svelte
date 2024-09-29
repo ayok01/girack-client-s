@@ -26,7 +26,7 @@
    * メッセージを送信する
    */
   const sendMessage = () => {
-    console.log("Input :: sendMessage : userId->", channelId);
+    //console.log("Input :: sendMessage : userId->", channelId, $page);
     socket.emit("sendMessage", {
       RequestSender: {
         userId: get(userStore).userId,
