@@ -1,10 +1,11 @@
 <script lang="ts">
   import { socket } from "$lib/socketHandler/socketInit";
+  import { page } from "$app/stores";
   import { userStore, sessionIdStore } from "$lib/store/userInfoStore";
   import { get } from "svelte/store";
   import { tick } from "svelte";
 
-  const channelId = window.location.pathname.split("/").pop()?.toString(); //チャンネルId
+  const channelId = $page.params.slug;
   let message = ""; //メッセージ入力用
 
   const scroolBottom = async () => {
