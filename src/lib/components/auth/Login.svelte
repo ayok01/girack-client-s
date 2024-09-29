@@ -4,6 +4,7 @@
   import { goto } from "$app/navigation";
   import { userStore } from "$lib/store/userInfoStore";
   import type { IUserinfo } from "$lib/type/user";
+  import { page } from "$app/stores";
 
   let username = "";
   let password = "";
@@ -44,6 +45,12 @@
         "userId=" + dat.data.UserInfo.userId + "; SameSite=strict;";
       document.cookie =
         "sessionId=" + dat.data.sessionId + "; SameSite=strict;";
+
+      //リダイレクト情報があるならそのページへ移動、なければトップ
+      const redirectTo = $page.url.searchParams.get("redirect");
+      if (redirectTo !== null) {
+        goto(redirectTo);
+      }
 
       //トップに移動する
       goto("/");
