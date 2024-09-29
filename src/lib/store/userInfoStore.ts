@@ -15,4 +15,4 @@ export const userListStore = writable<{ [key: string]: IUserinfo }>(
   initialUserList,
 );
 export const userStore = writable<IUserinfo>(initialUserinfo);
-export const sesssionIdStore = writable<string>("");
+export const sessionIdStore = writable<string>("");

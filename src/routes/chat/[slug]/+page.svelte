@@ -1,10 +1,11 @@
 <script lang="ts">
+  import Input from "$lib/components/chat/Input.svelte";
   import { get } from "svelte/store";
   import { page } from "$app/stores";
   import { socket } from "$lib/socketHandler/socketInit";
   import {
     userStore,
-    sesssionIdStore,
+    sessionIdStore,
     userListStore,
   } from "$lib/store/userInfoStore";
   import { chatStore } from "$lib/store/messageStore";
@@ -13,7 +14,7 @@
   import MessageInput from "$lib/components/chat/MessageInput.svelte";
 
   const getUserInfo = get(userStore);
-  const getSesssionIdStore = get(sesssionIdStore);
+  const getsessionIdStore = get(sessionIdStore);
 
   // リアクティブにパスを取得
   $: path = $page.url.pathname;
@@ -56,7 +57,7 @@
     socket.emit("fetchHistory", {
       RequestSender: {
         userId: getUserInfo.userId,
-        sessionId: getSesssionIdStore,
+        sessionId: getsessionIdStore,
       },
       channelId: channelId,
       fetchingPosition: {

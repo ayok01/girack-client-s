@@ -4,8 +4,10 @@ import type IMessage from "$lib/type/message";
 
 export default function receiveMessage(socket: Socket): void {
   socket.on("receiveMessage", (message: IMessage) => {
+    console.log("socket(receiveMessage) :: message->", message);
+    //チャット履歴の先頭にメッセージを追加
     chatStore.update((chat) => {
-      chat.historyData.history.push(message);
+      chat.historyData.history.unshift(message);
       return chat;
     });
   });

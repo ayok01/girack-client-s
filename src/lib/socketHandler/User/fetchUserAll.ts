@@ -2,7 +2,7 @@ import { Socket } from "socket.io-client";
 import {
   userListStore,
   userStore,
-  sesssionIdStore,
+  sessionIdStore,
 } from "$lib/store/userInfoStore";
 import { get } from "svelte/store";
 import type { IUserinfo } from "$lib/type/user";
@@ -31,7 +31,7 @@ export default function fetchUserAll(socket: Socket) {
           console.log("全てのユーザー情報を取得しました");
         } else {
           const myUSerInfo = get(userStore);
-          const sesssionId = get(sesssionIdStore);
+          const sesssionId = get(sessionIdStore);
           fetchUserAllEmit(
             myUSerInfo.userId,
             sesssionId,
