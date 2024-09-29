@@ -14,6 +14,16 @@ export default function fetchHistory(socket: Socket) {
       console.log("socket(fetchHistory) :: dat->", dat);
 
       if (dat.data !== null) {
+        if (!dat.data.historyData) {
+          chatStore.set({
+            channelId: "",
+            historyData: {
+              history: [],
+              atTop: false,
+              atEnd: false,
+            },
+          });
+        }
         // 現在のチャット履歴を取得
         const currentHistory = get(chatStore);
 
