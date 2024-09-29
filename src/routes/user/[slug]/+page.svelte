@@ -30,8 +30,8 @@
     document.cookie = "sessionId=; max-age=0";
     // ローカルストレージ情報を削除
     localStorage.removeItem("currentPath");
-    // ログインページへ遷移
-    goto("/auth");
+    // リロード
+    location.reload();
   };
 </script>
 

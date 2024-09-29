@@ -39,7 +39,7 @@ export default function fetchHistory(socket: Socket) {
             return chat;
           });
         }
-
+        console.log("socket(fetchHistory) :: dat->", dat, "更新するよ");
         // チャット履歴を更新
         chatStore.update((chat) => {
           chat.channelId = dat.data?.channelId ?? "";

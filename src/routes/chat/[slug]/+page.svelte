@@ -24,15 +24,13 @@
     console.log("Chat page mounted");
     if (channelId) {
       // ページがマウントされたときに最新のチャット履歴を取得
+      console.log(
+        "Fetching history for channel:",
+        channelId,
+        "-----===========-------",
+      );
       fetchHistory(channelId, "older");
     }
-
-    socket.on("historyData", (data) => {
-      chatStore.update((store) => {
-        store.historyData.history = data.history;
-        return store;
-      });
-    });
 
     tick().then(() => {
       setTimeout(() => {
@@ -73,16 +71,36 @@
     direction: string,
     positionMessageId: string = "",
   ) => {
+    let sesstionId = get(sessionIdStore) || "";
     console.log(
       "Fetching history for channel:",
       channelId,
       direction,
       positionMessageId,
     );
+    console.log(
+      "これでfetchHistory",
+      channelId,
+      positionMessageId,
+      direction,
+      $userStore.userId,
+      $sessionIdStore,
+    );
+    //暫定対応
+    if (sesstionId === "") {
+      // セッションIDが取得できていない場合はクッキーから取得して利用
+      sesstionId =
+        document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("sessionId="))
+          ?.split("=")[1] ?? "";
+      //Storeにも保存
+      sessionIdStore.set(sesstionId);
+    }
     socket.emit("fetchHistory", {
       RequestSender: {
-        userId: getUserInfo.userId,
-        sessionId: getsessionIdStore,
+        userId: $userStore.userId,
+        sessionId: sesstionId,
       },
       channelId: channelId,
       fetchingPosition: {
