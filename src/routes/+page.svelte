@@ -16,8 +16,25 @@
         sessionId: sessionId,
       },
     });
+  } else {
+    // チャンネル情報が取得できたらメッセージを取得する
+    channelInfo.forEach((channel) => {
+      socket.emit("fetchHistory", {
+        RequestSender: {
+          userId: userInfo.userId,
+          sessionId: sessionId,
+        },
+        channelId: channel.channelId,
+        fetchingPosition: {
+          positionMessageId: "",
+          includeThisPosition: true,
+          fetchDirection: "older",
+        },
+      });
+    });
   }
-  //ローカルストレージに保存されているパスを取得
+
+  // ローカルストレージに保存されているパスを取得
   const path = localStorage.getItem("currentPath");
   if (path && path !== "/auth") {
     goto(path);

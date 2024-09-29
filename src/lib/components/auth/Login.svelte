@@ -46,6 +46,28 @@
       document.cookie =
         "sessionId=" + dat.data.sessionId + "; SameSite=strict;";
 
+      // チャンネル情報とチャンネル一覧を取得するイベントを発火
+      socket.emit("fetchUserInfo", {
+        RequestSender: {
+          userId: dat.data.UserInfo.userId,
+          sessionId: dat.data.sessionId,
+        },
+        userId: dat.data.UserInfo.userId,
+      });
+      socket.emit("fetchChannelList", {
+        RequestSender: {
+          userId: dat.data.UserInfo.userId,
+          sessionId: dat.data.sessionId,
+        },
+      });
+      socket.emit("fetchUserAll", {
+        RequestSender: {
+          userId: dat.data.UserInfo.userId,
+          sessionId: dat.data.sessionId,
+        },
+        indexPage: "0",
+      });
+
       //リダイレクト情報があるならそのページへ移動、なければトップ
       const redirectTo = $page.url.searchParams.get("redirect");
       if (redirectTo !== null) {
