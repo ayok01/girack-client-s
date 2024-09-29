@@ -182,6 +182,16 @@
       sendMessageTime = false;
     }, 1000);
   };
+
+  // リンクを検出して変換する関数
+  const linkify = (text: string) => {
+    const urlPattern =
+      /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi;
+    return text.replace(
+      urlPattern,
+      '<a href="$1" class="text-blue-700"  target="_blank" rel="noopener noreferrer">$1</a>',
+    );
+  };
 </script>
 
 <div
@@ -212,7 +222,7 @@
                   </p>
                 </div>
                 <div class=" p-2 rounded-lg break-words whitespace-pre-wrap">
-                  {message.content}
+                  <div>{@html linkify(message.content)}</div>
                 </div>
               </div>
             </div>
