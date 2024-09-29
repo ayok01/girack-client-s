@@ -1,6 +1,7 @@
 <script lang="ts">
   import { userStore } from "$lib/store/userInfoStore";
   import ChangeProfileIcon from "$lib/components/user/ChangeProfileIcon.svelte";
+  import { goto } from "$app/navigation";
 
   //モーダル表示用のbool値と初期化用関数セット
   let displayChangeProfileIcon = {
@@ -11,6 +12,27 @@
   function updateUserName(newName: string) {
     userStore.update((user) => ({ ...user, userName: newName }));
   }
+
+  // ログアウト処理
+  const logout = () => {
+    // セッション情報を削除
+    userStore.update((user) => ({
+      ...user,
+      userId: "",
+      sessionId: "",
+      userName: "",
+      role: [],
+      banned: false,
+      channelJoined: [],
+    }));
+    // クッキー情報を削除
+    document.cookie = "userId=; max-age=0";
+    document.cookie = "sessionId=; max-age=0";
+    // ローカルストレージ情報を削除
+    localStorage.removeItem("currentPath");
+    // ログインページへ遷移
+    goto("/auth");
+  };
 </script>
 
 <ChangeProfileIcon {displayChangeProfileIcon} />
@@ -34,4 +56,10 @@
   <button on:click={() => (displayChangeProfileIcon.value = true)} class="btn"
     >アイコンを変える</button
   >
+  <!-- ログアウト -->
+  <div>
+    <button on:click={logout} class="btn btn-outline btn-error">
+      ログアウト
+    </button>
+  </div>
 </div>
