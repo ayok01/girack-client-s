@@ -68,7 +68,7 @@
       const pathHeading = $page.url.pathname;
       //console.log("$page->", $page);
       //認証ページでないならリダイレクト
-      if (pathHeading !== "/auth") {
+      if (pathHeading !== "/auth" && pathHeading !== "/") {
         //リダイレクト先を格納しつつ認証ページへ
         goto("/auth?redirect=" + pathHeading);
       } else {
