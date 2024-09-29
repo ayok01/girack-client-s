@@ -13,8 +13,8 @@ export default defineConfig({
         start_url: "/",
         scope: "/",
         display: "standalone",
-        theme_color: "#ffffff",
-        background_color: "#ffffff",
+        theme_color: "#7480ff",
+        background_color: "#1d232a",
         icons: [
           {
             src: "pwa-64x64.png",
