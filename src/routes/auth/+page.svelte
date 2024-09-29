@@ -34,6 +34,14 @@
           sessionId: cookieAuthData.sessionId,
         },
       });
+      socket.emit("fetchUserAll", {
+        RequestSender: {
+          userId: cookieAuthData.userId,
+          sessionId: cookieAuthData.sessionId,
+        },
+        indexPage: "0",
+      });
+
       //トップへ移動
       goto("/");
     }
