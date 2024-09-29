@@ -56,6 +56,16 @@
       console.log("発火");
       tick().then(scroolBottom);
     }
+    // スクロールの位置が一番下の場合、新しいメッセージが追加されたときにスクロールを一番下に設定
+    const chatContainer = document.getElementById("chatContainer");
+    if (
+      chatContainer &&
+      chatContainer.scrollHeight - chatContainer.scrollTop ===
+        chatContainer.clientHeight &&
+      $chatStore.historyData.history.length > 0
+    ) {
+      tick().then(scroolBottom);
+    }
   }
 
   const fetchHistory = (
