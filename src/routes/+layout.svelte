@@ -1,5 +1,6 @@
 <script lang="ts">
   import "../app.css";
+  import { browser } from "$app/environment";
   import { page } from "$app/stores";
   import { onMount } from "svelte";
   import { loadSocket } from "$lib/socketHandler/socketInit";
@@ -9,6 +10,10 @@
   import { goto } from "$app/navigation";
   import { channelStore } from "$lib/store/channelStore";
   import { getAvatarUrl } from "$lib/repository/fileRepository";
+
+  import { pwaAssetsHead } from "virtual:pwa-assets/head";
+  import { pwaInfo } from "virtual:pwa-info";
+  $: webManifestLink = pwaInfo ? pwaInfo.webManifest.linkTag : "";
 
   const sidebarButtonClick = (event: MouseEvent) => {
     const sidebarElement = document.getElementById("default-sidebar");
@@ -52,6 +57,9 @@
     if (!userInfo.userId) {
       goto("/auth");
     }
+    if (browser && "serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/service-worker.js");
+    }
     loadSocket();
   });
 
@@ -80,6 +88,12 @@
   }
 </script>
 
+<svelte:head>
+  {#each pwaAssetsHead.links as link}
+    <link {...link} />
+  {/each}
+  {@html webManifestLink}
+</svelte:head>
 {#if !$page.route.id?.startsWith("/auth")}
   <div
     class="flex p-2 {!$page.route.id?.startsWith('/auth') ? 'sm:ml-64' : 'p-4'}"
