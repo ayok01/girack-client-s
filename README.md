@@ -16,4 +16,4 @@ Girack chatのモバイル対応を目指して
 
 `docker build -t sveltekit-app .`
 
-`docker run -p 5173:4173 sveltekit-app`
+`docker run -p 4173:4173 sveltekit-app`
