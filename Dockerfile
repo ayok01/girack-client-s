@@ -1,23 +1,29 @@
 # ベースイメージとしてNode.jsを使用
-FROM node:18
+FROM node:20.11-bullseye AS builder
 
-# 作業ディレクトリを設定
 WORKDIR /app
 
-# package.jsonとpackage-lock.jsonをコピー
-COPY package*.json ./
+COPY package.json ./
+COPY package-lock.json ./
+COPY tsconfig.json ./
 
-# 依存関係をインストール
-RUN npm install
+RUN npm ci
 
-# アプリケーションのソースコードをコピー
 COPY . .
-COPY .env .env
-# ビルドコマンドを実行
+COPY .env ./
+
 RUN npm run build
 
+# 実行用
+FROM node:20.11-bullseye
+
+WORKDIR /app
+
+## ビルド用のレイヤからコピーする
+COPY --from=builder /app ./
+
 # ポートを公開
-EXPOSE 4173
+EXPOSE 6173
 
 # サーバーを起動するコマンドを設定
-CMD ["npm", "run", "preview"]
+CMD ["npm", "run", "preview", "--", "--host"]
