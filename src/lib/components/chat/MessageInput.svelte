@@ -1,10 +1,11 @@
 <script lang="ts">
   import { socket } from "$lib/socketHandler/socketInit";
+  import { page } from "$app/stores";
   import { userStore, sessionIdStore } from "$lib/store/userInfoStore";
   import { get } from "svelte/store";
   import { tick } from "svelte";
 
-  const channelId = window.location.pathname.split("/").pop()?.toString(); //チャンネルId
+  const channelId = $page.params.slug;
   let message = ""; //メッセージ入力用
 
   const scroolBottom = async () => {
@@ -26,7 +27,7 @@
    * メッセージを送信する
    */
   const sendMessage = () => {
-    console.log("Input :: sendMessage : userId->", channelId);
+    //console.log("Input :: sendMessage : userId->", channelId, $page);
     socket.emit("sendMessage", {
       RequestSender: {
         userId: get(userStore).userId,
@@ -46,7 +47,7 @@
 <input
   type="text"
   bind:value={message}
-  placeholder="Type your message..."
+  placeholder="メッセージを入力"
   class="flex-grow p-2 border rounded-l-lg"
 />
 <button on:click={sendMessage} class="p-2 bg-blue-500 text-white rounded-r-lg"
