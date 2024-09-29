@@ -184,7 +184,11 @@
   };
 </script>
 
-<div class="flex flex-col h-[calc(100svh-4rem)] mx-auto">
+<div
+  class="flex flex-col {window.innerWidth > 640
+    ? 'h-[calc(100svh-4rem)] '
+    : 'h-[calc(100svh-6rem)]'}  mx-auto"
+>
   <div
     id="chatContainer"
     class="flex-grow overflow-y-auto p-4"
@@ -207,7 +211,7 @@
                     {new Date(message.time).toLocaleTimeString()}
                   </p>
                 </div>
-                <div class="p-2 rounded-lg break-words whitespace-pre-wrap">
+                <div class=" p-2 rounded-lg break-words whitespace-pre-wrap">
                   {message.content}
                 </div>
               </div>
@@ -220,7 +224,7 @@
     {/if}
   </div>
 
-  <div class="flex p-4">
+  <div class="flex p-2">
     <MessageInput on:send={sendMessage} />
   </div>
 </div>
