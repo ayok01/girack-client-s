@@ -185,12 +185,54 @@
 
   // リンクを検出して変換する関数
   const linkify = (text: string) => {
+    const getUserList = get(userListStore);
     const urlPattern =
       /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi;
-    return text.replace(
-      urlPattern,
-      '<a href="$1" class="text-blue-700"  target="_blank" rel="noopener noreferrer">$1</a>',
-    );
+    const mentionPattern = /@<(\d+)>/g;
+    const scriptPattern = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
+    const htmlTagPattern = /<\/?[^>]+(>|$)/g;
+
+    // スクリプトタグをエスケープ
+    text = text.replace(scriptPattern, (match) => {
+      return match.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    });
+
+    // プレースホルダーを使ってリンクとメンションを一時的に置き換え
+    const placeholders: { placeholder: string; content: string }[] = [];
+    let placeholderIndex = 0;
+
+    // メンションを変換
+    text = text.replace(mentionPattern, (match, userId) => {
+      const userInfo = getUserList[userId];
+      const placeholder = `__PLACEHOLDER_${placeholderIndex++}__`;
+      placeholders.push({
+        placeholder,
+        content: `<span class="w-fit inline-flex items-center glass px-1 rounded-lg">@<img src="${getAvatarUrl(userId)}" alt="${userInfo.userId}" class="w-5 h-5 rounded-full object-cover"  /> ${userInfo.userName}</span>`,
+      });
+      return placeholder;
+    });
+
+    // リンクを変換
+    text = text.replace(urlPattern, (match) => {
+      const placeholder = `__PLACEHOLDER_${placeholderIndex++}__`;
+      placeholders.push({
+        placeholder,
+        content: `<a href="${match}" class="text-blue-700" target="_blank" rel="noopener noreferrer">${match}</a>`,
+      });
+      return placeholder;
+    });
+
+    // その他のHTMLタグをエスケープ
+    text = text.replace(htmlTagPattern, (match) => {
+      return match.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    });
+
+    // プレースホルダーを元に戻す
+    placeholders.forEach(({ placeholder, content }) => {
+      text = text.replace(placeholder, content);
+    });
+
+    return text;
   };
 </script>
 
@@ -222,7 +264,7 @@
                   </p>
                 </div>
                 <div class=" p-2 rounded-lg break-words whitespace-pre-wrap">
-                  <div>{@html linkify(message.content)}</div>
+                  {@html linkify(message.content)}
                 </div>
               </div>
             </div>
