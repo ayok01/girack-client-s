@@ -3,7 +3,7 @@
   import { onDestroy } from "svelte";
   import { goto } from "$app/navigation";
   import { userStore } from "$lib/store/userInfoStore";
-  import type { IMyUserinfo } from "$lib/type/user";
+  import type { IUserinfo } from "$lib/type/user";
 
   let username = "";
   let password = "";
@@ -29,7 +29,7 @@
   const SOCKETauthLogin = (dat: {
     result: string;
     data: {
-      UserInfo: IMyUserinfo;
+      UserInfo: IUserinfo;
       sessionId: string;
     } | null;
   }) => {

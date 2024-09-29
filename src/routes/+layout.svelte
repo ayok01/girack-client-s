@@ -8,6 +8,7 @@
   import { get } from "svelte/store";
   import { goto } from "$app/navigation";
   import { channelStore } from "$lib/store/channelStore";
+  import { getAvatarUrl } from "$lib/repository/fileRepository";
 
   const sidebarButtonClick = (event: MouseEvent) => {
     const sidebarElement = document.getElementById("default-sidebar");
@@ -142,10 +143,14 @@
         <!-- ユーザー情報 -->
         <a
           on:click={sidebarCloseButtonClick}
-          href="/user/{1}"
-          class="flex items-center"
+          href={`/user/${$userStore.userId}`}
+          class="flex items-center gap-2"
         >
-          <img src="/bot.png" alt="Avatar" class="w-8 h-8 rounded-full mr-2" />
+          <img
+            src={getAvatarUrl($userStore.userId)}
+            alt="Avatar"
+            class="w-8 h-8 rounded-full object-cover"
+          />
           <div>
             <p class="font-bold">{$userStore.userName}</p>
             <p class="text-sm text-gray-500">{$userStore.userId}</p>

@@ -9,7 +9,8 @@
   } from "$lib/store/userInfoStore";
   import { chatStore } from "$lib/store/messageStore";
   import { onMount, tick } from "svelte";
-  import receiveMessage from "$lib/socketHandler/message/receiveMessage";
+  import { getAvatarUrl } from "$lib/repository/fileRepository";
+  import MessageInput from "$lib/components/chat/MessageInput.svelte";
 
   const getUserInfo = get(userStore);
   const getSesssionIdStore = get(sesssionIdStore);
@@ -31,8 +32,6 @@
         return store;
       });
     });
-
-    receiveMessage(socket);
     scroolBottom();
   });
 
@@ -68,26 +67,12 @@
     });
   };
 
-  let newMessageText = "";
-
-  function sendMessage() {
-    console.log("Sending message:", newMessageText);
-    if (newMessageText.trim() !== "") {
-      socket.emit("sendMessage", {
-        channelId: channelId,
-        userId: getUserInfo.userId,
-        content: newMessageText,
-      });
-      newMessageText = "";
-    }
-  }
-
   const getUserName = (userId: string) => {
     const getUserList = get(userListStore);
     return getUserList[userId]?.userName || "Unknown User";
   };
 
-  function handleScroll(event: Event) {
+  const handleScroll = (event: Event) => {
     const element = event.target as HTMLElement;
     if (element.scrollTop === 0) {
       //会話履歴の最後のメッセージIDを取得
@@ -95,15 +80,49 @@
         $chatStore.historyData.history[
           $chatStore.historyData.history.length - 1
         ].messageId;
+
+      if ($chatStore.historyData.atTop) {
+        return;
+      }
+      scroolMessageId();
       fetchHistory(channelId, "older", currentMessage);
     } else if (
       element.scrollHeight - element.scrollTop ===
       element.clientHeight
     ) {
       const currentMessage = $chatStore.historyData.history[0].messageId;
+      if ($chatStore.historyData.atEnd) {
+        return;
+      }
       fetchHistory(channelId, "newer", currentMessage);
     }
-  }
+  };
+
+  // 会話履歴を取得した時にスクロール位置を指定できるように
+  const scroolMessageId = () => {
+    const chatContainer = document.getElementById("chatContainer");
+    // 一番上のメッセージを取得
+    /**
+     * <div id="chatContainer">
+     *   <div>
+     *    <div>メッセージ1</div>
+     *   <div>
+     * </div>
+     */
+    const chatContainerTop = chatContainer?.firstElementChild?.lastElementChild;
+    if (chatContainerTop) {
+      console.log("chatContainerTop", chatContainerTop);
+      setTimeout(() => {
+        // conatinerの高さを取得
+        const containerHeight = chatContainer.clientHeight;
+        // 一番上のメッセージの高さを取得
+        const topHeight = chatContainerTop.clientHeight;
+        //　スクロール
+        console.log("scrollIntoView", containerHeight - topHeight + 56);
+        chatContainer.scrollTop = containerHeight - topHeight;
+      }, 10);
+    }
+  };
 
   const scroolBottom = async () => {
     // ページ遷移時にスクロール位置を一番下に設定
@@ -131,11 +150,11 @@
       <div class="flex flex-col-reverse">
         {#each $chatStore.historyData.history as message (message.messageId)}
           {#if message.userId !== "SYSTEM"}
-            <div class="flex items-start mb-4">
+            <div class="flex items-start mb-4 gap-2">
               <img
-                src="/bot.png"
+                src={getAvatarUrl(message.userId)}
                 alt="Avatar"
-                class="w-8 h-8 rounded-full mr-2"
+                class="w-8 h-8 rounded-full object-cover"
               />
               <div class="flex flex-col">
                 <div class="flex items-center">
@@ -143,7 +162,6 @@
                   <p class="text-gray-500 text-sm ml-2">
                     {new Date(message.time).toLocaleTimeString()}
                   </p>
-                  {message.messageId}
                 </div>
                 <p class="bg-gray-200 p-2 rounded-lg">{message.content}</p>
               </div>
@@ -157,15 +175,6 @@
   </div>
 
   <div class="flex p-4">
-    <input
-      type="text"
-      bind:value={newMessageText}
-      placeholder="Type your message..."
-      class="flex-grow p-2 border rounded-l-lg"
-    />
-    <button
-      on:click={sendMessage}
-      class="p-2 bg-blue-500 text-white rounded-r-lg">Send</button
-    >
+    <MessageInput />
   </div>
 </div>
