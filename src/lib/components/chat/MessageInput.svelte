@@ -5,7 +5,7 @@
   import { get } from "svelte/store";
   import { tick } from "svelte";
 
-  const channelId = $page.params.slug;
+  $: channelId = $page.params.slug;
   let message = ""; //メッセージ入力用
 
   const scroolBottom = async () => {
@@ -28,6 +28,11 @@
    */
   const sendMessage = () => {
     //console.log("Input :: sendMessage : userId->", channelId, $page);
+    console.log(
+      "Input :: sendMessage : userId->",
+      get(userStore).userId,
+      channelId,
+    );
     socket.emit("sendMessage", {
       RequestSender: {
         userId: get(userStore).userId,
