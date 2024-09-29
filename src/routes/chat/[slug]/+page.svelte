@@ -112,7 +112,7 @@
           const newScrollHeight = chatContainer.scrollHeight;
           const scrollDifference = newScrollHeight - previousScrollHeight;
           chatContainer.scrollTop += scrollDifference;
-        }, 10);
+        }, 100);
       }
     }
   };
@@ -133,30 +133,32 @@
   };
 </script>
 
-<div class="flex flex-col h-[calc(100vh-4rem)] mx-auto">
+<div class="flex flex-col h-[calc(100svh-4rem)] mx-auto">
   <div
     id="chatContainer"
     class="flex-grow overflow-y-auto p-4"
     on:scroll={handleScroll}
   >
     {#if Array.isArray($chatStore.historyData.history)}
-      <div class="flex flex-col-reverse">
+      <div class="flex flex-col-reverse w-full">
         {#each $chatStore.historyData.history as message (message.messageId)}
           {#if message.userId !== "SYSTEM"}
-            <div class="flex items-start mb-4 gap-2">
+            <div class="flex items-start mb-4 gap-2 w-[calc(100%-64px)]">
               <img
                 src={getAvatarUrl(message.userId)}
                 alt="Avatar"
                 class="w-8 h-8 rounded-full object-cover"
               />
-              <div class="flex flex-col">
+              <div class="flex flex-col w-full">
                 <div class="flex items-center">
                   <p class="font-bold">{getUserName(message.userId)}</p>
                   <p class="text-gray-500 text-sm ml-2">
                     {new Date(message.time).toLocaleTimeString()}
                   </p>
                 </div>
-                <p class="bg-gray-200 p-2 rounded-lg">{message.content}</p>
+                <div class="p-2 rounded-lg break-words whitespace-pre-wrap">
+                  {message.content}
+                </div>
               </div>
             </div>
           {/if}
