@@ -1,31 +1,23 @@
-# ビルド用
-FROM node:18.12.1-slim as builder
+# ベースイメージとしてNode.jsを使用
+FROM node:18
 
+# 作業ディレクトリを設定
 WORKDIR /app
 
-## パッケージをインストール
-COPY package.json ./
-COPY package-lock.json ./
-COPY tsconfig.json ./
-COPY .env ./
-RUN npm ci
+# package.jsonとpackage-lock.jsonをコピー
+COPY package*.json ./
 
+# 依存関係をインストール
+RUN npm install
+
+# アプリケーションのソースコードをコピー
 COPY . .
-
+COPY .env .env
+# ビルドコマンドを実行
 RUN npm run build
 
-# 実行用
-FROM node:18.12.1-slim
-
-WORKDIR /app
-
-## ビルド用のレイヤからコピーする
-COPY --from=builder /app/.svelte-kit/output/client ./client
-COPY --from=builder /app/package.json .
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/.env ./
-
-## Svelteが動く5173ポートを開けておく
+# ポートを公開
 EXPOSE 4173
 
+# サーバーを起動するコマンドを設定
 CMD ["npm", "run", "preview"]
