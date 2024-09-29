@@ -1,4 +1,4 @@
-export interface IMyUserinfo {
+export interface IUserinfo {
   userName: string; //名前
   role: string[]; //ロール
   userId: string; //ユーザーID
