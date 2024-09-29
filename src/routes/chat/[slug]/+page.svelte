@@ -18,6 +18,7 @@
   // リアクティブにパスを取得
   $: path = $page.url.pathname;
   $: channelId = path.split("/").pop()?.toString() || "";
+  let sendMessageTime: boolean = false;
 
   onMount(() => {
     console.log("Chat page mounted");
@@ -32,13 +33,28 @@
         return store;
       });
     });
-    scroolBottom();
+
+    tick().then(() => {
+      setTimeout(() => {
+        scroolBottom();
+      }, 100);
+    });
   });
 
   $: {
     if ($page.route.id && channelId) {
       fetchHistory(channelId, "older", "");
-      scroolBottom();
+      tick().then(() => {
+        scroolBottom();
+      });
+    }
+  }
+
+  // チャット履歴を監視
+  $: {
+    if ($chatStore.historyData.history.length > 0 && sendMessageTime) {
+      console.log("発火");
+      tick().then(scroolBottom);
     }
   }
 
@@ -119,17 +135,42 @@
 
   const scroolBottom = async () => {
     // ページ遷移時にスクロール位置を一番下に設定
-    await tick();
+    console.log("DOM更新完了");
+    const chatContainer = document.getElementById("chatContainer");
+    console.log("chatContainer", chatContainer);
+    if (chatContainer) {
+      console.log("scrollIntoView", chatContainer.scrollHeight);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+      console.log("scrollIntoView", chatContainer.scrollTop);
+    }
+  };
+
+  /**
+   * メッセージを送信する
+   */
+  const sendMessage = async (event: Event) => {
+    const message = (event as CustomEvent<string>).detail;
+    //console.log("Input :: sendMessage : userId->", channelId, $page);
+    console.log(
+      "Input :: sendMessage : userId->",
+      get(userStore).userId,
+      channelId,
+    );
+    socket.emit("sendMessage", {
+      RequestSender: {
+        userId: get(userStore).userId,
+        sessionId: get(sessionIdStore),
+      },
+      message: {
+        channelId: channelId,
+        content: message,
+        fileId: [],
+      },
+    });
+    sendMessageTime = true;
     setTimeout(() => {
-      console.log("DOM更新完了");
-      const chatContainer = document.getElementById("chatContainer");
-      console.log("chatContainer", chatContainer);
-      if (chatContainer) {
-        console.log("scrollIntoView", chatContainer.scrollHeight);
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-        console.log("scrollIntoView", chatContainer.scrollTop);
-      }
-    }, 100);
+      sendMessageTime = false;
+    }, 1000);
   };
 </script>
 
@@ -170,6 +211,6 @@
   </div>
 
   <div class="flex p-4">
-    <MessageInput />
+    <MessageInput on:send={sendMessage} />
   </div>
 </div>
