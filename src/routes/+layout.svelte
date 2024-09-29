@@ -62,8 +62,18 @@
   //ロードし終えたらSocket接続準備用関数を実行
   onMount(() => {
     const userInfo = get(userStore);
+
     if (!userInfo.userId) {
-      goto("/auth");
+      //アクセスしようとしていたパスを取得
+      const pathHeading = $page.url.pathname;
+      //console.log("$page->", $page);
+      //認証ページでないならリダイレクト
+      if (pathHeading !== "/auth") {
+        //リダイレクト先を格納しつつ認証ページへ
+        goto("/auth?redirect=" + pathHeading);
+      } else {
+        goto("/auth");
+      }
     }
     if (browser && "serviceWorker" in navigator) {
       navigator.serviceWorker.register("/service-worker.js");
