@@ -118,7 +118,7 @@
   >
     <div class="flex flex-col h-full px-3 py-4 bg-gray-50 dark:bg-gray-800">
       <span class="ms-3">
-        <a href="/chat">チャンネル一覧</a>
+        <a href="/chat" on:click={sidebarCloseButtonClick}>チャンネル一覧</a>
       </span>
       <div class="flex-grow overflow-y-auto">
         <ul class="space-y-2 font-medium">
