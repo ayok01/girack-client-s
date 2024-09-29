@@ -11,7 +11,6 @@
    * メッセージを送信する
    */
   const sendMessage = () => {
-    console.log("Input :: sendMessage : userId->", channelId);
     socket.emit("sendMessage", {
       RequestSender: {
         userId: get(userStore).userId,
