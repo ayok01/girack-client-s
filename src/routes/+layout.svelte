@@ -10,6 +10,9 @@
   import { channelStore } from "$lib/store/channelStore";
   import { getAvatarUrl } from "$lib/repository/fileRepository";
 
+  import { pwaInfo } from "virtual:pwa-info";
+  $: webManifestLink = pwaInfo ? pwaInfo.webManifest.linkTag : "";
+
   const sidebarButtonClick = (event: MouseEvent) => {
     const sidebarElement = document.getElementById("default-sidebar");
     if (sidebarElement) {
@@ -80,6 +83,9 @@
   }
 </script>
 
+<svelte:head>
+  {@html webManifestLink}
+</svelte:head>
 {#if !$page.route.id?.startsWith("/auth")}
   <div
     class="flex p-2 {!$page.route.id?.startsWith('/auth') ? 'sm:ml-64' : 'p-4'}"
