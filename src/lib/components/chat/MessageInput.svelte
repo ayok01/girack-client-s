@@ -1,6 +1,6 @@
 <script lang="ts">
   import { socket } from "$lib/socketHandler/socketInit";
-  import { userStore, sesssionIdStore } from "$lib/store/userInfoStore";
+  import { userStore, sessionIdStore } from "$lib/store/userInfoStore";
   import { get } from "svelte/store";
   import { tick } from "svelte";
 
@@ -30,7 +30,7 @@
     socket.emit("sendMessage", {
       RequestSender: {
         userId: get(userStore).userId,
-        sessionId: get(sesssionIdStore),
+        sessionId: get(sessionIdStore),
       },
       message: {
         channelId: channelId,

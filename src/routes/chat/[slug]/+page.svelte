@@ -1,5 +1,4 @@
 <script lang="ts">
-  import Input from "$lib/components/chat/Input.svelte";
   import { get } from "svelte/store";
   import { page } from "$app/stores";
   import { socket } from "$lib/socketHandler/socketInit";

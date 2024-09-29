@@ -1,5 +1,5 @@
 import { PUBLIC_BACKEND_ADDRESS } from "$env/static/public";
-import { userStore, sesssionIdStore } from "$lib/store/userInfoStore";
+import { userStore, sessionIdStore } from "$lib/store/userInfoStore";
 import { get } from "svelte/store";
 
 const apiUrl = `${PUBLIC_BACKEND_ADDRESS}`;
@@ -81,7 +81,7 @@ export function deleteBlobUrl(fileId: string) {
  */
 const prepareFile = async (fileId: string) => {
   const getMyUserinfo = get(userStore);
-  const sessionId = get(sesssionIdStore);
+  const sessionId = get(sessionIdStore);
   if (getBlobUrl(fileId) !== undefined) return;
 
   //取得中と登録
