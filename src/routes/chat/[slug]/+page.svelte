@@ -11,14 +11,14 @@
   import { onMount, tick } from "svelte";
   import { getAvatarUrl } from "$lib/repository/fileRepository";
   import MessageInput from "$lib/components/chat/MessageInput.svelte";
-
-  const getUserInfo = get(userStore);
-  const getsessionIdStore = get(sessionIdStore);
+  import { IconArrowDownSquareFilled } from "@tabler/icons-svelte";
 
   // リアクティブにパスを取得
   $: path = $page.url.pathname;
   $: channelId = path.split("/").pop()?.toString() || "";
   let sendMessageTime: boolean = false;
+  let isAtBottom = true;
+  let messageInputHeight = 0;
 
   onMount(() => {
     console.log("Chat page mounted");
@@ -36,6 +36,20 @@
       setTimeout(() => {
         scroolBottom();
       }, 100);
+
+      const chatContainer = document.getElementById("chatContainer");
+      const messageInput = document.getElementById("messageInput");
+      if (messageInput) {
+        messageInputHeight = messageInput.offsetHeight;
+      }
+      if (chatContainer) {
+        chatContainer.addEventListener("scroll", handleButtomjudge);
+      }
+      return () => {
+        if (chatContainer) {
+          chatContainer.removeEventListener("scroll", handleButtomjudge);
+        }
+      };
     });
   });
 
@@ -65,6 +79,16 @@
       tick().then(scroolBottom);
     }
   }
+
+  // スクロールイベントを監視する関数
+  const handleButtomjudge = () => {
+    const chatContainer = document.getElementById("chatContainer");
+    if (chatContainer) {
+      isAtBottom =
+        chatContainer.scrollTop + chatContainer.clientHeight >=
+        chatContainer.scrollHeight;
+    }
+  };
 
   const fetchHistory = (
     channelId: string,
@@ -252,6 +276,13 @@
 
     return text;
   };
+
+  const scrollToLatestMessage = () => {
+    const chatContainer = document.getElementById("chatContainer");
+    if (chatContainer) {
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+  };
 </script>
 
 <div
@@ -294,7 +325,20 @@
     {/if}
   </div>
 
-  <div class="flex p-2">
+  <div id="messageInput" class="flex p-2">
     <MessageInput on:send={sendMessage} />
   </div>
+
+  <!-- 最新画面に戻るボタン -->
+  {#if !isAtBottom}
+    <button
+      class="fixed right-4 bg-blue-500 text-white p-2 rounded-full shadow-lg z-50"
+      style="bottom: {messageInputHeight +
+        10 +
+        (window.innerWidth < 640 ? 50 : 0)}px;"
+      on:click={scrollToLatestMessage}
+    >
+      <IconArrowDownSquareFilled size={24} />
+    </button>
+  {/if}
 </div>
