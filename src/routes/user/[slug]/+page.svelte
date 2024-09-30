@@ -1,13 +1,27 @@
 <script lang="ts">
   import { userStore } from "$lib/store/userInfoStore";
+  import { channelStore } from "$lib/store/channelStore";
   import ChangeProfileIcon from "$lib/components/user/ChangeProfileIcon.svelte";
   import { getAvatarUrl } from "$lib/repository/fileRepository";
+  import { onDestroy } from "svelte";
 
   //モーダル表示用のbool値と初期化用関数セット
   let displayChangeProfileIcon = {
     value: false,
     reset: () => (displayChangeProfileIcon.value = false),
   };
+
+  // 入っているチャンネル名
+  let joinChannelListName: string[] = [];
+  const unsubscribe = channelStore.subscribe((channels) => {
+    joinChannelListName = channels
+      .map((c) => c.channelName)
+      .filter((value, index, self) => self.indexOf(value) === index);
+  });
+
+  onDestroy(() => {
+    unsubscribe();
+  });
 
   function updateUserName(newName: string) {
     userStore.update((user) => ({ ...user, userName: newName }));
@@ -52,26 +66,32 @@
       />
     </div>
     <div class="mb-4">
-      <p class="text-gray-700">
+      <p>
         <span class="font-semibold">名前:</span>
         {$userStore.userName}
       </p>
-      <p class="text-gray-700">
+      <p>
         <span class="font-semibold">ロール:</span>
         {$userStore.role.join(", ")}
       </p>
-      <p class="text-gray-700">
+      <p>
         <span class="font-semibold">ユーザーID:</span>
         {$userStore.userId}
       </p>
-      <p class="text-gray-700">
+      <p>
         <span class="font-semibold">BANされたかどうか:</span>
         {$userStore.banned ? "はい" : "いいえ"}
       </p>
-      <p class="text-gray-700">
+      <div>
         <span class="font-semibold">参加しているチャンネル:</span>
-        {$userStore.channelJoined.join(", ")}
-      </p>
+        <div class="flex flex-wrap gap-2">
+          {#each joinChannelListName as channel}
+            <div class="rounded-btn glass p-1">
+              #{channel}
+            </div>
+          {/each}
+        </div>
+      </div>
     </div>
 
     <div class="mb-4">
