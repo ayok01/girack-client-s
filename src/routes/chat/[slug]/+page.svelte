@@ -315,6 +315,87 @@
                 <div class=" p-2 rounded-lg break-words whitespace-pre-wrap">
                   {@html linkify(message.content)}
                 </div>
+                {#if message.linkData && Object.keys(message.linkData).length > 0}
+                  <div class="mt-2 p-2 border rounded-lg">
+                    {#each Object.values(message.linkData) as link}
+                      {#if link.contentType === "text/html"}
+                        <div class="md:flex flex-row">
+                          <div
+                            class="md:ml-4 md:flex-grow md:min-w-0 md:basis-1/2"
+                          >
+                            <a
+                              href={link.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              class="text-blue-700 md:flex-shrink-0"
+                            >
+                              <img
+                                src={link.favicon}
+                                alt="Favicon"
+                                class="inline w-4 h-4 mr-1"
+                              />
+                              {link.title}
+                            </a>
+                            <div class="md:ml-4 md:flex-grow md:min-w-0">
+                              <p class="break-words">{link.description}</p>
+                            </div>
+                          </div>
+                          {#if link.images && link.images.length > 0}
+                            <div
+                              class="h-30 sm:h-20 md:h-40 md:w-fit overflow-hidden md:ml-4"
+                            >
+                              <img
+                                src={link.images[0].url}
+                                alt={`Preview image for ${link.title}`}
+                                class="mt-2 w-full h-full object-cover rounded-lg"
+                              />
+                            </div>
+                          {/if}
+                        </div>
+                      {/if}
+                      {#if link.contentType === "image"}
+                        <div
+                          class="h-30 sm:h-20 md:h-40 md:w-40 overflow-hidden"
+                        >
+                          <a
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <img
+                              src={link.url}
+                              alt={`Preview image for`}
+                              class="mt-2 w-full h-full object-cover rounded-lg"
+                            />
+                          </a>
+                        </div>
+                      {/if}
+                      {#if link.contentType === "video"}
+                        <div>
+                          <a
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <video
+                              controls
+                              class="mt-2 w-full h-auto rounded-lg"
+                            >
+                              <source src={link.url} type={link.mediaType} />
+                              <track
+                                kind="captions"
+                                src="path/to/captions.vtt"
+                                srclang="jp"
+                                label="Japanese captions"
+                                default
+                              />
+                            </video>
+                          </a>
+                        </div>
+                      {/if}
+                    {/each}
+                  </div>
+                {/if}
               </div>
             </div>
           {/if}
@@ -330,7 +411,7 @@
   </div>
 
   <!-- 最新画面に戻るボタン -->
-  {#if !isAtBottom}
+  <!-- {#if !isAtBottom}
     <button
       class="fixed right-4 bg-blue-500 text-white p-2 rounded-full shadow-lg z-50"
       style="bottom: {messageInputHeight +
@@ -340,5 +421,5 @@
     >
       <IconArrowDownSquareFilled size={24} />
     </button>
-  {/if}
+  {/if} -->
 </div>
