@@ -75,7 +75,7 @@
   };
 </script>
 
-<p>{displayChangeProfileIcon.value}</p>
+<!-- <p>{displayChangeProfileIcon.value}</p> -->
 <dialog
   id="my_modal_1"
   class="modal"
@@ -144,8 +144,8 @@
           class="btn"
           on:click={() => {
             if (uploadResult === "success") {
+              location.reload();
             }
-            location.reload();
           }}>閉じる</button
         >
       </form>
