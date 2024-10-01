@@ -211,7 +211,7 @@
   <slot />
 
   {#if !$page.route.id?.startsWith("/auth") && window.innerWidth < 640}
-    <div class="flex p-2">
+    <div class="flex p-2 px-10">
       <button
         on:click={sidebarCloseButtonClick}
         id="sideder-dialog"
@@ -220,9 +220,9 @@
       <button
         on:click={sidebarButtonClick}
         type="button"
-        class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100"
+        class="inline-flex items-center p-1 text-sm rounded-lg sm:hidden bg-gray-500"
       >
-        <IconAlignJustified size={20} stroke={2} />
+        <IconAlignJustified size={30} stroke={2} color={"white"} />
       </button>
     </div>
   {/if}
