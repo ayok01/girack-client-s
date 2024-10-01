@@ -14,9 +14,6 @@ export default function fetchChannelList(socket: Socket) {
       if (dat.data !== null) {
         // チャンネル一覧を格納
         channelStore.set(dat.data);
-        if (dat.data.length > 0) {
-        } else {
-        }
       }
     },
   );

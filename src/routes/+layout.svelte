@@ -62,7 +62,6 @@
   //ロードし終えたらSocket接続準備用関数を実行
   onMount(() => {
     const userInfo = get(userStore);
-
     if (!userInfo.userId) {
       //アクセスしようとしていたパスを取得
       const pathHeading = $page.url.pathname;
@@ -72,7 +71,8 @@
         //リダイレクト先を格納しつつ認証ページへ
         goto("/auth?redirect=" + pathHeading);
       } else if (pathHeading !== "/auth" && pathHeading == "/") {
-        goto("/chat");
+        //トップへ移動
+        goto("/auth?redirect=" + "/chat");
       } else {
         goto("/auth");
       }

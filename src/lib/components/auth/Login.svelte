@@ -75,7 +75,7 @@
       }
 
       //トップに移動する
-      goto("/");
+      goto("/chat");
     } else {
       //処理中状態を解除
       processing = false;

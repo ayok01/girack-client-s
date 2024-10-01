@@ -6,6 +6,7 @@
   import { onDestroy, onMount } from "svelte";
   import { sessionIdStore, userStore } from "$lib/store/userInfoStore";
   import { get } from "svelte/store";
+  import { page } from "$app/stores";
 
   let viewMode: "login" | "register" = "login";
   let cookieAuthData = {
@@ -43,7 +44,13 @@
       });
 
       //トップへ移動
-      goto("/");
+      //リダイレクト情報があるならそのページへ移動、なければトップ
+      const redirectTo = $page.url.searchParams.get("redirect");
+      if (redirectTo !== null) {
+        goto(redirectTo);
+      } else {
+        goto("/chat");
+      }
     }
   };
 

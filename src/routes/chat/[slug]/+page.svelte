@@ -105,7 +105,7 @@
     direction: string,
     positionMessageId: string = "",
   ) => {
-    let sesstionId = get(sessionIdStore) || "";
+    let sessionId = get(sessionIdStore) || "";
     console.log(
       "Fetching history for channel:",
       channelId,
@@ -121,20 +121,20 @@
       $sessionIdStore,
     );
     //暫定対応
-    if (sesstionId === "") {
+    if (sessionId === "") {
       // セッションIDが取得できていない場合はクッキーから取得して利用
-      sesstionId =
+      sessionId =
         document.cookie
           .split("; ")
           .find((row) => row.startsWith("sessionId="))
           ?.split("=")[1] ?? "";
       //Storeにも保存
-      sessionIdStore.set(sesstionId);
+      sessionIdStore.set(sessionId);
     }
     socket.emit("fetchHistory", {
       RequestSender: {
         userId: $userStore.userId,
-        sessionId: sesstionId,
+        sessionId: sessionId,
       },
       channelId: channelId,
       fetchingPosition: {
