@@ -98,7 +98,7 @@
       }
     } else if (path === "/chat") {
       channelName = "チャンネル一覧";
-    } else if (path === "/user/1") {
+    } else if (path === "/user/" + $userStore.userId) {
       channelName = "ユーザー情報";
     } else {
       channelName = "";
@@ -208,7 +208,7 @@
 <div class={!$page.route.id?.startsWith("/auth") ? "sm:ml-64" : "p-4"}>
   <slot />
 
-  {#if window.innerWidth < 640}
+  {#if !$page.route.id?.startsWith("/auth") && window.innerWidth < 640}
     <div class="flex p-2">
       <button
         on:click={sidebarCloseButtonClick}

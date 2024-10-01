@@ -27,8 +27,32 @@
     userStore.update((user) => ({ ...user, userName: newName }));
   }
 
+  // クッキーを削除する関数
+  const deleteCookies = () => {
+    const cookies = document.cookie.split("; ");
+    for (const cookie of cookies) {
+      const eqPos = cookie.indexOf("=");
+      const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie;
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/user; domain=${location.hostname}`;
+    }
+  };
+  // ローカルストレージを削除する関数
+  const deleteLocalStorage = () => {
+    localStorage.removeItem("currentPath");
+  };
+
+  // クッキーとローカルストレージが削除されたことを確認する関数
+  const isStorageCleared = () => {
+    const cookiesCleared =
+      !document.cookie.includes("userId") &&
+      !document.cookie.includes("sessionId") &&
+      !document.cookie.includes("session");
+    const localStorageCleared = localStorage.getItem("currentPath") === null;
+    return cookiesCleared && localStorageCleared;
+  };
+
   // ログアウト処理
-  const logout = () => {
+  const logout = async () => {
     // セッション情報を削除
     userStore.update((user) => ({
       ...user,
@@ -39,30 +63,34 @@
       banned: false,
       channelJoined: [],
     }));
-    // クッキー情報を削除
-    document.cookie = "userId=; max-age=0";
-    document.cookie = "sessionId=; max-age=0";
-    // ローカルストレージ情報を削除
-    localStorage.removeItem("currentPath");
-    // リロード
-    location.reload();
+
+    // クッキーとローカルストレージを削除
+    deleteCookies();
+    await deleteLocalStorage();
+    await setTimeout(() => {
+      // 削除が確認できたらリロード
+      if (isStorageCleared()) {
+        location.reload();
+      } else {
+        console.error("クッキーまたはローカルストレージの削除に失敗しました。");
+      }
+    }, 1000);
   };
 </script>
 
 <ChangeProfileIcon {displayChangeProfileIcon} />
 <div
-  class="flex flex-col items-center justify-centerf p-4
+  class="flex flex-col items-center justify-centerf p-4 overflow-y-auto
   {window.innerWidth > 640
     ? 'h-[calc(100svh-4rem)] '
     : 'h-[calc(100svh-6rem)]'}  mx-auto"
 >
   <div class="rounded-lg p-6 w-full max-w-md">
-    <h1 class="text-2xl font-bold mb-4">ユーザー情報</h1>
     <div class="flex flex-col items-center mb-4">
       <img
         src={getAvatarUrl($userStore.userId)}
         alt="アバター"
-        class="w-24 h-24 rounded-full mb-4 rounded-full object-cover"
+        class="w-20 h-20 rounded-full mb-4 rounded-full object-cover"
       />
     </div>
     <div class="mb-4">
