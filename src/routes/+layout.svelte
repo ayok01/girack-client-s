@@ -71,6 +71,8 @@
       if (pathHeading !== "/auth" && pathHeading !== "/") {
         //リダイレクト先を格納しつつ認証ページへ
         goto("/auth?redirect=" + pathHeading);
+      } else if (pathHeading !== "/auth" && pathHeading == "/") {
+        goto("/chat");
       } else {
         goto("/auth");
       }
