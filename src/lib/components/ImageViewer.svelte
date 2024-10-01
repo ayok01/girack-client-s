@@ -15,6 +15,12 @@
 </script>
 
 <dialog id="modal_image_viewer" class="modal">
+  <img
+    class="w-auto rounded mt-auto"
+    style="max-height:90%; max-width:90vw;"
+    alt={imageURL}
+    src={imageURL}
+  />
   <form method="dialog" class="max-h-min w-72 mx-auto">
     <!-- if there is a button in form, it will close the modal -->
     <button
@@ -23,10 +29,4 @@
       >閉じる
     </button>
   </form>
-  <img
-    class="w-auto rounded mb-auto"
-    style="max-height:90%; max-width:90vw;"
-    alt={imageURL}
-    src={imageURL}
-  />
 </dialog>
