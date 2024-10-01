@@ -243,6 +243,8 @@
     const scriptPattern = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
     const htmlTagPattern = /<\/?[^>]+(>|$)/g;
     const channelPattern = /#<(\d+)>/g;
+    const codeSnippetPattern = /```([^`]+)```/g;
+    const inlineCodePattern = /`([^`]+)`/g;
 
     // スクリプトタグをエスケープ
     text = text.replace(scriptPattern, (match) => {
@@ -290,6 +292,27 @@
       });
       return placeholder;
     });
+
+    // コードスニペットを変換
+    text = text.replace(codeSnippetPattern, (match, code) => {
+      const placeholder = `__PLACEHOLDER_${placeholderIndex++}__`;
+      placeholders.push({
+        placeholder,
+        content: `<pre class="bg-gray-100 p-2 rounded"><code>${code}</code>`,
+      });
+      return placeholder;
+    });
+
+    // インラインコードを変換
+    text = text.replace(inlineCodePattern, (match, code) => {
+      const placeholder = `__PLACEHOLDER_${placeholderIndex++}__`;
+      placeholders.push({
+        placeholder,
+        content: `<code class="bg-gray-100 p-1 rounded">${code}</code>`,
+      });
+      return placeholder;
+    });
+
     // その他のHTMLタグをエスケープ
     text = text.replace(htmlTagPattern, (match) => {
       return match.replace(/</g, "&lt;").replace(/>/g, "&gt;");
