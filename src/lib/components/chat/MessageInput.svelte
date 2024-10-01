@@ -16,25 +16,36 @@
     adjustTextareaHeight(); // メッセージ送信後に高さをリセット
   };
 
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
   const handleKeyDown = (event: KeyboardEvent) => {
-    //変換の場合は無視
-    if (
-      navigator.platform.toUpperCase().indexOf("MAC") >= 0 &&
-      event.keyCode === 229
-    ) {
-      return;
-    }
-    if (event.key === "Enter" && event.ctrlKey) {
-      return;
-    }
-    // Shift + Enterで改行を追加
-    if (event.key === "Enter" && event.shiftKey) {
-      setTimeout(adjustTextareaHeight, 0); // 改行後に高さを調整
-      return;
-    }
-    if (event.key === "Enter") {
-      sendMessage();
-      event.preventDefault(); // Enterキーのデフォルト動作を防ぐ
+    if (isMobile) {
+      // スマホの場合はEnterキーで改行
+      if (event.key === "Enter" && !event.shiftKey) {
+        setTimeout(adjustTextareaHeight, 0); // 改行後に高さを調整
+        return;
+      }
+    } else {
+      //変換の場合は無視
+      if (
+        navigator.platform.toUpperCase().indexOf("MAC") >= 0 &&
+        event.keyCode === 229
+      ) {
+        return;
+      }
+      if (event.key === "Enter" && event.ctrlKey) {
+        return;
+      }
+      // Shift + Enterで改行を追加
+      if (event.key === "Enter" && event.shiftKey) {
+        setTimeout(adjustTextareaHeight, 0); // 改行後に高さを調整
+        return;
+      }
+      if (event.key === "Enter") {
+        sendMessage();
+        event.preventDefault(); // Enterキーのデフォルト動作を防ぐ
+        setTimeout(adjustTextareaHeight, 0);
+      }
     }
   };
 
