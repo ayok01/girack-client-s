@@ -13,6 +13,8 @@
   import FilePreview from "$lib/components/chat/FilePreview.svelte";
   import MessageInput from "$lib/components/chat/MessageInput.svelte";
   import { IconArrowDownSquareFilled } from "@tabler/icons-svelte";
+  import { channelStore } from "$lib/store/channelStore";
+  import type { IChannel } from "$lib/type/channel";
 
   // リアクティブにパスを取得
   $: path = $page.url.pathname;
@@ -20,6 +22,13 @@
   let sendMessageTime: boolean = false;
   let isAtBottom = true;
   let messageInputHeight = 0;
+
+  let channelList: IChannel[] = [];
+
+  channelStore.subscribe((channels) => {
+    channelList = channels;
+    console.log("channels", channels);
+  });
 
   onMount(() => {
     console.log("Chat page mounted");
@@ -226,7 +235,6 @@
     }, 1000);
   };
 
-  // リンクを検出して変換する関数
   const linkify = (text: string) => {
     const getUserList = get(userListStore);
     const urlPattern =
@@ -234,6 +242,7 @@
     const mentionPattern = /@<(\d+)>/g;
     const scriptPattern = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
     const htmlTagPattern = /<\/?[^>]+(>|$)/g;
+    const channelPattern = /#<(\d+)>/g;
 
     // スクリプトタグをエスケープ
     text = text.replace(scriptPattern, (match) => {
@@ -261,6 +270,20 @@
       placeholders.push({
         placeholder,
         content: `<a href="${match}" class="text-blue-700" target="_blank" rel="noopener noreferrer">${match}</a>`,
+      });
+      return placeholder;
+    });
+
+    // チャンネルIDを変換
+    text = text.replace(channelPattern, (match, channelId) => {
+      const placeholder = `__PLACEHOLDER_${placeholderIndex++}__`;
+      //チャンネルリストからチャンネル名を取得
+      const channelName = channelList.find(
+        (channel) => channel.channelId === channelId,
+      )?.channelName;
+      placeholders.push({
+        placeholder,
+        content: `<a href="/chat/${channelId}" class="w-fit inline-flex items-center glass px-1 rounded-lg" rel="noopener noreferrer">#${channelName}</a>`,
       });
       return placeholder;
     });
