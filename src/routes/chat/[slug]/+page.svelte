@@ -259,7 +259,9 @@
       const placeholder = `__PLACEHOLDER_${placeholderIndex++}__`;
       placeholders.push({
         placeholder,
-        content: `<span class="w-fit inline-flex items-center glass px-1 rounded-lg">@<img src="${getAvatarUrl(userId)}" alt="${userInfo.userId}" class="w-5 h-5 rounded-full object-cover"  /> ${userInfo.userName}</span>`,
+        content: userInfo
+          ? `<span class="w-fit inline-flex items-center glass px-1 rounded-lg">@<img src="${getAvatarUrl(userId)}" alt="${userInfo.userId}" class="w-5 h-5 rounded-full object-cover"  /> ${userInfo.userName}</span>`
+          : `<span class="w-fit inline-flex items-center glass px-1 rounded-lg">@Unknown User</span>`,
       });
       return placeholder;
     });
@@ -277,17 +279,17 @@
     // チャンネルIDを変換
     text = text.replace(channelPattern, (match, channelId) => {
       const placeholder = `__PLACEHOLDER_${placeholderIndex++}__`;
-      //チャンネルリストからチャンネル名を取得
-      const channelName = channelList.find(
+      // チャンネルリストからチャンネル名を取得
+      const channel = channelList.find(
         (channel) => channel.channelId === channelId,
-      )?.channelName;
+      );
+      const channelName = channel ? channel.channelName : "Unknown Channel";
       placeholders.push({
         placeholder,
         content: `<a href="/chat/${channelId}" class="w-fit inline-flex items-center glass px-1 rounded-lg" rel="noopener noreferrer">#${channelName}</a>`,
       });
       return placeholder;
     });
-
     // その他のHTMLタグをエスケープ
     text = text.replace(htmlTagPattern, (match) => {
       return match.replace(/</g, "&lt;").replace(/>/g, "&gt;");
