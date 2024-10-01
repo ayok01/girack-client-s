@@ -1,5 +1,6 @@
 <script lang="ts">
   import { socket } from "$lib/socketHandler/socketInit";
+  import { IconFile } from "@tabler/icons-svelte";
   import { userStore, sessionIdStore } from "$lib/store/userInfoStore";
   import { PUBLIC_BACKEND_ADDRESS } from "$env/static/public";
   import type { IFile } from "$lib/type/file";
@@ -68,21 +69,29 @@
 <div class="flex flex-col gap-2">
   {#each fileId as id}
     <div>
-      <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-      <!-- svelte-ignore a11y-click-events-have-key-events -->
-      <img
-        on:click={() => {
-          activeImageUrlViewing =
-            PUBLIC_BACKEND_ADDRESS + "/downloadfile/" + id;
-          displayImageViewer.value = true;
-        }}
-        class="w-auto rounded"
-        style="max-height:100px;"
-        alt={"画像 : " + id}
-        src={fileDatas[id]?.type.startsWith("image/")
-          ? PUBLIC_BACKEND_ADDRESS + "/downloadfile/" + id
-          : null}
-      />
+      {#if fileDatas[id]?.type.startsWith("image/")}
+        <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <img
+          on:click={() => {
+            activeImageUrlViewing =
+              PUBLIC_BACKEND_ADDRESS + "/downloadfile/" + id;
+            displayImageViewer.value = true;
+          }}
+          class="w-auto rounded md:max-h-36 max-h-24 cursor-pointer"
+          alt={"画像 : " + id}
+          src={fileDatas[id]?.type.startsWith("image/")
+            ? PUBLIC_BACKEND_ADDRESS + "/downloadfile/" + id
+            : null}
+        />
+      {:else}
+        <div
+          class="card bg-base-200 py-2 px-3 flex gap-2 flex-row flex-wrap items-center"
+        >
+          <IconFile />
+          <span>{fileDatas[id]?.name || "loading..."}</span>
+        </div>
+      {/if}
     </div>
   {/each}
 </div>
