@@ -54,13 +54,17 @@
 </script>
 
 <p>ここでファイル表示</p>
-{#each fileId as id}
-  <p>{fileDatas[id]?.name || "loading..."}</p>
-  <img
-    style="max-height:100px; width:auto;"
-    alt={"画像 : " + id}
-    src={fileDatas[id]?.type.startsWith("image/")
-      ? PUBLIC_BACKEND_ADDRESS + "/downloadfile/" + id
-      : null}
-  />
-{/each}
+<div class="flex flex-col gap-2">
+  {#each fileId as id}
+    <div>
+      <img
+        class="w-auto rounded"
+        style="max-height:100px;"
+        alt={"画像 : " + id}
+        src={fileDatas[id]?.type.startsWith("image/")
+          ? PUBLIC_BACKEND_ADDRESS + "/downloadfile/" + id
+          : null}
+      />
+    </div>
+  {/each}
+</div>
