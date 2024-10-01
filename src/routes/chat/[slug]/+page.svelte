@@ -10,6 +10,7 @@
   import { chatStore } from "$lib/store/messageStore";
   import { onMount, tick } from "svelte";
   import { getAvatarUrl } from "$lib/repository/fileRepository";
+  import FilePreview from "$lib/components/chat/FilePreview.svelte";
   import MessageInput from "$lib/components/chat/MessageInput.svelte";
   import { IconArrowDownSquareFilled } from "@tabler/icons-svelte";
 
@@ -315,6 +316,7 @@
                 <div class=" p-2 rounded-lg break-words whitespace-pre-wrap">
                   {@html linkify(message.content)}
                 </div>
+
                 {#if message.linkData && Object.keys(message.linkData).length > 0}
                   <div class="mt-2 p-2 border rounded-lg">
                     {#each Object.values(message.linkData) as link}
@@ -395,6 +397,11 @@
                       {/if}
                     {/each}
                   </div>
+                {/if}
+
+                <!-- ファイルデータ表示 -->
+                {#if message.fileId.length !== 0}
+                  <FilePreview fileId={message.fileId} />
                 {/if}
               </div>
             </div>
