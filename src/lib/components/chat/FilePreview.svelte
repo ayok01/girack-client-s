@@ -5,8 +5,17 @@
   import type { IFile } from "$lib/type/file";
   import { onDestroy, onMount } from "svelte";
   import { get } from "svelte/store";
+  import ImageViewer from "../ImageViewer.svelte";
 
   export let fileId: string[];
+
+  //モーダル表示用のbool値と初期化用関数セット
+  let displayImageViewer = {
+    value: false,
+    reset: () => (displayImageViewer.value = false),
+  };
+  //画像ビューワー用URL
+  let activeImageUrlViewing = "";
 
   //ファイル情報格納用
   let fileDatas: {
@@ -26,7 +35,7 @@
       fileInfo: IFile | null;
     };
   }) => {
-    console.log("FilePreview :: SOCKETfetchFileInfo : dat->", dat);
+    //console.log("FilePreview :: SOCKETfetchFileInfo : dat->", dat);
     if (dat.data.fileInfo !== null) {
       //ファイル情報を格納する
       fileDatas[dat.data.fileId] = dat.data.fileInfo;
@@ -53,11 +62,20 @@
   });
 </script>
 
-<p>ここでファイル表示</p>
+{#if displayImageViewer.value}
+  <ImageViewer imageURL={activeImageUrlViewing} {displayImageViewer} />
+{/if}
 <div class="flex flex-col gap-2">
   {#each fileId as id}
     <div>
+      <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+      <!-- svelte-ignore a11y-click-events-have-key-events -->
       <img
+        on:click={() => {
+          activeImageUrlViewing =
+            PUBLIC_BACKEND_ADDRESS + "/downloadfile/" + id;
+          displayImageViewer.value = true;
+        }}
         class="w-auto rounded"
         style="max-height:100px;"
         alt={"画像 : " + id}
