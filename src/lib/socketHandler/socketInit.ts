@@ -17,6 +17,7 @@ import fetchChannelList from "./Channel/fetchCannelList";
 import fetchHistory from "./message/fetchMessage";
 import fetchUserAll from "./User/fetchUserAll";
 import receiveMessage from "./message/receiveMessage";
+import updateMessage from "./message/updateMessage";
 
 export function loadSocket() {
   console.log("socketInit :: loadSockert : SocketIO接続をロードします");
@@ -29,4 +30,5 @@ export function loadSocket() {
   fetchHistory(socket); //メッセージの受け取り
   fetchUserAll(socket); //全ユーザー情報の受け取り
   receiveMessage(socket); //メッセージの受け取り
+  updateMessage(socket); //メッセージの更新
 }
