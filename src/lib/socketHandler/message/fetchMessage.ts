@@ -48,7 +48,7 @@ export default function fetchHistory(socket: Socket) {
           const currentHistory = chat.historyData.history;
 
           // 新しい履歴データとマージ
-          const newHistory = dat.data?.historyData.history ?? [];
+          const newHistory = dat.data?.historyData?.history ?? [];
           const mergedHistory = [...currentHistory, ...newHistory];
 
           // 重複を排除するために一意のメッセージIDでフィルタリング
@@ -66,8 +66,8 @@ export default function fetchHistory(socket: Socket) {
           // 更新された履歴データをストアに格納
           chat.historyData = {
             history: uniqueHistory,
-            atTop: dat.data?.historyData.atTop ?? false,
-            atEnd: dat.data?.historyData.atEnd ?? false,
+            atTop: dat.data?.historyData?.atTop ?? false,
+            atEnd: dat.data?.historyData?.atEnd ?? false,
           };
           return chat;
         });

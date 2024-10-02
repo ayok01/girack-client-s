@@ -153,11 +153,15 @@
   const handleScroll = (event: Event) => {
     const element = event.target as HTMLElement;
     if (element.scrollTop === 0) {
+      // 会話履歴が存在するか確認
+      if ($chatStore.historyData.history.length === 0) {
+        return;
+      }
       //会話履歴の最後のメッセージIDを取得
       const currentMessage =
         $chatStore.historyData.history[
           $chatStore.historyData.history.length - 1
-        ].messageId;
+        ].messageId ?? "";
 
       if ($chatStore.historyData.atTop) {
         return;
