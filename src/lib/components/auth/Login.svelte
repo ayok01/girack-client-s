@@ -42,9 +42,13 @@
 
       //クッキー書き込む
       document.cookie =
-        "userId=" + dat.data.UserInfo.userId + "; SameSite=strict;";
+        "userId=" +
+        dat.data.UserInfo.userId +
+        "; SameSite=strict; Max-Age=1296000";
       document.cookie =
-        "sessionId=" + dat.data.sessionId + "; SameSite=strict;";
+        "sessionId=" +
+        dat.data.sessionId +
+        "; SameSite=strict; Max-Age=1296000";
 
       // チャンネル情報とチャンネル一覧を取得するイベントを発火
       socket.emit("fetchUserInfo", {
