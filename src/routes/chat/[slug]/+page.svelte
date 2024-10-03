@@ -362,7 +362,13 @@
                 <div class="flex items-center">
                   <p class="font-bold">{getUserName(message.userId)}</p>
                   <p class="text-gray-500 text-sm ml-2">
-                    {new Date(message.time).toLocaleTimeString()}
+                    {new Date(message.time).toLocaleString("ja-JP", {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </p>
                 </div>
                 <div class=" p-2 rounded-lg break-words whitespace-pre-wrap">
