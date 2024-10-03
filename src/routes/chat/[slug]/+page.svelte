@@ -15,6 +15,7 @@
   import { IconArrowDownSquareFilled } from "@tabler/icons-svelte";
   import { channelStore } from "$lib/store/channelStore";
   import type { IChannel } from "$lib/type/channel";
+  import type IMessage from "$lib/type/message";
 
   // リアクティブにパスを取得
   $: path = $page.url.pathname;
@@ -336,6 +337,30 @@
       chatContainer.scrollTop = chatContainer.scrollHeight;
     }
   };
+
+  /**
+   * 前の投稿と比較して日付が変わったかどうかを判定
+   */
+  const isDateChanged = (currentMessage: IMessage) => {
+    //Storeから配列の順番を取得
+    const index = $chatStore.historyData.history.findIndex(
+      (message) => message.messageId === currentMessage.messageId,
+    );
+    // 取得した順番の一つ前のメッセージを取得
+    const previousMessage = $chatStore.historyData.history[index + 1];
+    // 一つ前のメッセージが存在しない場合はfalseを返す
+    if (!previousMessage) {
+      return false;
+    }
+    // 一つ前のメッセージの日付と比較
+    const previousDate = new Date(previousMessage.time);
+    const currentDate = new Date(currentMessage.time);
+    return (
+      previousDate.getFullYear() !== currentDate.getFullYear() ||
+      previousDate.getMonth() !== currentDate.getMonth() ||
+      previousDate.getDate() !== currentDate.getDate()
+    );
+  };
 </script>
 
 <div
@@ -352,6 +377,19 @@
       <div class="flex flex-col-reverse w-full">
         {#each $chatStore.historyData.history as message (message.messageId)}
           {#if message.userId !== "SYSTEM"}
+            {#if isDateChanged(message)}
+              <div class="flex items-center justify-center my-4">
+                <hr class="border-t border-gray-300 w-full" />
+                <span class="px-2 text-gray-500 text-sm">
+                  {new Date(message.time).toLocaleDateString("ja-JP", {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                  })}
+                </span>
+                <hr class="border-t border-gray-300 w-full" />
+              </div>
+            {/if}
             <div class="flex items-start mb-4 gap-2 w-[calc(100%-64px)]">
               <img
                 src={getAvatarUrl(message.userId)}
