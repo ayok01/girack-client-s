@@ -84,11 +84,7 @@
   };
 </script>
 
-<div
-  class="flex flex-col {window.innerWidth > 640
-    ? 'h-[calc(100svh-4rem)] '
-    : 'h-[calc(100svh-6rem)]'}  mx-auto container mx-auto p-4"
->
+<div class="flex flex-col h-[calc(100svh-56px)] mx-auto container mx-auto p-4">
   <ul class="space-y-4 overflow-y-auto h-full">
     {#each $channelStore as channel}
       <li

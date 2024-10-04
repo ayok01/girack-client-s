@@ -88,7 +88,7 @@
   const handleFileChange = (event: Event) => {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      selectedFiles = Array.from(input.files);
+      selectedFiles = [...selectedFiles, ...Array.from(input.files)];
     }
   };
 
@@ -141,6 +141,10 @@
   const triggerFileInput = () => {
     document.getElementById("fileInput")?.click();
   };
+
+  const removeFile = (fileToRemove: File) => {
+    selectedFiles = selectedFiles.filter((file) => file !== fileToRemove);
+  };
 </script>
 
 <div class="flex flex-col w-full">
@@ -148,13 +152,20 @@
   {#if selectedFiles.length > 0}
     <div class="file-preview-list mt-2 flex gap-2">
       {#each selectedFiles as file}
-        <div class="file-preview-item flex items-center mb-2">
+        <div class="file-preview-item relative flex items-center mb-2">
           {#if file.type.startsWith("image/")}
             <img
               src={URL.createObjectURL(file)}
               alt={file.name}
               class="file-preview-image max-w-12 max-h-12 mr-2"
             />
+            <button
+              on:click={() => removeFile(file)}
+              class="remove-icon absolute top-0 right-0 m-1 text-red-500"
+              aria-label="削除"
+            >
+              ✖️
+            </button>
           {/if}
         </div>
       {/each}
@@ -214,5 +225,15 @@
     max-width: 50px;
     max-height: 50px;
     margin-right: 10px;
+  }
+  .remove-icon {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 5px;
+    cursor: pointer;
+    background: white;
+    border-radius: 50%;
+    padding: 2px;
   }
 </style>

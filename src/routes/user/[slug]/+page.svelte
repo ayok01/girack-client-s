@@ -82,9 +82,7 @@
 <ChangeProfileIcon {displayChangeProfileIcon} />
 <div
   class="flex flex-col items-center justify-centerf p-4 overflow-y-auto
-  {window.innerWidth > 640
-    ? 'h-[calc(100svh-4rem)] '
-    : 'h-[calc(100svh-6rem)]'}  mx-auto"
+  h-[calc(100svh-56px)] mx-auto"
 >
   <div class="rounded-lg p-6 w-full max-w-md">
     <div class="flex flex-col items-center mb-4">

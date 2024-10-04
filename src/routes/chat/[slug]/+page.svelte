@@ -389,11 +389,7 @@
   };
 </script>
 
-<div
-  class="flex flex-col {window.innerWidth > 640
-    ? 'h-[calc(100svh-4rem)] '
-    : 'h-[calc(100svh-6rem)]'}  mx-auto"
->
+<div class="flex flex-col h-[calc(100svh-56px)] mx-auto">
   <div
     id="chatContainer"
     class="flex-grow overflow-y-auto p-4"
