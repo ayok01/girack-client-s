@@ -1,24 +1,104 @@
 <script lang="ts">
-  import { page } from "$app/stores";
   import { createEventDispatcher } from "svelte";
+  import { userStore, sessionIdStore } from "$lib/store/userInfoStore";
+  import { IconSend2, IconPaperclip } from "@tabler/icons-svelte";
+  import { get } from "svelte/store";
+  import { PUBLIC_BACKEND_ADDRESS } from "$env/static/public";
+  import type { IInputMessage } from "$lib/type/message";
+  const apiUrl = `${PUBLIC_BACKEND_ADDRESS}`;
+
   let message = ""; //メッセージ入力用
   let textarea: HTMLTextAreaElement;
+  let selectedFiles: File[] = []; // 選択されたファイルを保持
+  export let channelId: string = "dummyChannelName";
 
   const dispatch = createEventDispatcher();
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     // メッセージが空文字または改行だけの場合は無視
-    if (message.trim() === "") {
+    if (message.trim() === "" && selectedFiles.length === 0) {
       return;
     }
-    dispatch("send", message);
+
+    let fileIds: string[] | null = null;
+    if (selectedFiles.length > 0) {
+      const uploadedFileIds = await Promise.all(
+        selectedFiles.map((file) => uploadFile(file)),
+      );
+      fileIds = uploadedFileIds.filter((id): id is string => id !== null); // nullを除外
+    }
+
+    const messageToSend: IInputMessage = {
+      message: message,
+      fileId: fileIds,
+    };
+    dispatch("send", messageToSend);
     message = ""; // メッセージをリセット
+    selectedFiles = []; // ファイルをリセット
     adjustTextareaHeight(); // メッセージ送信後に高さをリセット
   };
 
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  const uploadFile = (file: File): Promise<string | null> => {
+    const user = get(userStore);
+    const sessionId = get(sessionIdStore);
+    console.log("uploadFile -> user", user.userId, sessionId);
+    return new Promise((resolve, reject) => {
+      const metadataForForm = {
+        RequestSender: {
+          userId: user.userId,
+          sessionId: sessionId,
+        },
+        directory: `C${channelId}_${user.userId}`,
+      };
+
+      const formData = new FormData();
+      formData.append("metadata", JSON.stringify(metadataForForm));
+      formData.append("file", file);
+
+      const xhr = new XMLHttpRequest();
+      xhr.upload.addEventListener("progress", (event) => {
+        if (event.lengthComputable) {
+          console.log(
+            `Upload progress: ${Math.round((event.loaded / event.total) * 100)}%`,
+          );
+        }
+      });
+
+      xhr.addEventListener("load", () => {
+        if (xhr.status === 200) {
+          const result = JSON.parse(xhr.responseText);
+          if (result.data !== undefined) {
+            resolve(result.data);
+          } else {
+            reject("Failed to get file ID");
+          }
+        } else {
+          reject(xhr.statusText);
+        }
+      });
+
+      xhr.withCredentials = true;
+      xhr.open("POST", `${apiUrl}/uploadfile`);
+      xhr.send(formData);
+    });
+  };
+
+  const handleFileChange = (event: Event) => {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      selectedFiles = Array.from(input.files);
+    }
+  };
+
+  const adjustTextareaHeight = () => {
+    if (textarea) {
+      textarea.style.height = "10px"; // 一旦高さをリセット
+      textarea.style.height = Math.min(textarea.scrollHeight, 200) + "px"; // 最大200pxまで広げる
+    }
+  };
 
   const handleKeyDown = (event: KeyboardEvent) => {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     if (isMobile) {
       // スマホの場合はEnterキーで改行
       if (event.key === "Enter" && !event.shiftKey) {
@@ -49,22 +129,68 @@
     }
   };
 
-  const adjustTextareaHeight = () => {
-    if (textarea) {
-      textarea.style.height = "10px"; // 一旦高さをリセット
-      textarea.style.height = Math.min(textarea.scrollHeight, 200) + "px"; // 最大200pxまで広げる
-    }
+  const triggerFileInput = () => {
+    document.getElementById("fileInput")?.click();
   };
 </script>
 
-<textarea
-  bind:value={message}
-  placeholder="メッセージを入力"
-  class="flex-grow p-2 border rounded-l-lg resize-none h-10"
-  on:keydown={handleKeyDown}
-  bind:this={textarea}
-  on:input={adjustTextareaHeight}
-/>
-<button on:click={sendMessage} class="p-2 bg-blue-500 text-white rounded-r-lg"
-  >Send</button
->
+<div class="flex flex-col w-full">
+  <!-- ファイルプレビューリスト -->
+  {#if selectedFiles.length > 0}
+    <div class="file-preview-list mt-2 flex gap-2">
+      {#each selectedFiles as file}
+        <div class="file-preview-item flex items-center mb-2">
+          {#if file.type.startsWith("image/")}
+            <img
+              src={URL.createObjectURL(file)}
+              alt={file.name}
+              class="file-preview-image max-w-12 max-h-12 mr-2"
+            />
+          {/if}
+        </div>
+      {/each}
+    </div>
+  {/if}
+
+  <div class="flex w-full mt-2">
+    <button on:click={triggerFileInput} class="mr-2 p-2 text-white rounded">
+      <IconPaperclip size={20} />
+      <input
+        type="file"
+        id="fileInput"
+        on:change={handleFileChange}
+        class="hidden"
+        multiple
+      />
+    </button>
+    <div class="flex grow gap-2 w-full">
+      <textarea
+        bind:value={message}
+        placeholder="メッセージを入力"
+        class="p-2 border rounded-lg resize-none h-10 w-full"
+        on:keydown={handleKeyDown}
+        bind:this={textarea}
+        on:input={adjustTextareaHeight}
+      />
+      <button on:click={sendMessage} class="p-2 text-white rounded-lg">
+        <IconSend2 size={20} />
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .file-preview-list {
+    margin-top: 10px;
+  }
+  .file-preview-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  .file-preview-image {
+    max-width: 50px;
+    max-height: 50px;
+    margin-right: 10px;
+  }
+</style>

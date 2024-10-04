@@ -15,7 +15,7 @@
   import { IconArrowDownSquareFilled } from "@tabler/icons-svelte";
   import { channelStore } from "$lib/store/channelStore";
   import type { IChannel } from "$lib/type/channel";
-  import type IMessage from "$lib/type/message";
+  import type { IMessage, IInputMessage } from "$lib/type/message";
 
   // リアクティブにパスを取得
   $: path = $page.url.pathname;
@@ -215,9 +215,15 @@
   /**
    * メッセージを送信する
    */
-  const sendMessage = async (event: Event) => {
-    const message = (event as CustomEvent<string>).detail;
-    //console.log("Input :: sendMessage : userId->", channelId, $page);
+  const sendMessage = async (event: CustomEvent<IInputMessage>) => {
+    const message = event.detail;
+    console.log("Input :: sendMessage : message->", message);
+    const messageToSend: IInputMessage = {
+      message: message.message,
+      fileId: message.fileId,
+    };
+    console.log(messageToSend);
+
     console.log(
       "Input :: sendMessage : userId->",
       get(userStore).userId,
@@ -230,8 +236,8 @@
       },
       message: {
         channelId: channelId,
-        content: message,
-        fileId: [],
+        content: messageToSend.message,
+        fileId: messageToSend.fileId || [],
       },
     });
     sendMessageTime = true;
@@ -338,28 +344,48 @@
     }
   };
 
+  interface IDateBefore {
+    judge: boolean;
+    value: Date;
+  }
   /**
    * 前の投稿と比較して日付が変わったかどうかを判定
+   * @return {judge: boolean, value:Date } 日付が変わった場合はtrue
    */
-  const isDateChanged = (currentMessage: IMessage) => {
+  const isDateChanged = (currentMessage: IMessage): IDateBefore => {
     //Storeから配列の順番を取得
     const index = $chatStore.historyData.history.findIndex(
       (message) => message.messageId === currentMessage.messageId,
     );
     // 取得した順番の一つ前のメッセージを取得
-    const previousMessage = $chatStore.historyData.history[index + 1];
+    const previousMessage = $chatStore.historyData.history[index - 1];
     // 一つ前のメッセージが存在しない場合はfalseを返す
     if (!previousMessage) {
-      return false;
+      return {
+        judge: false,
+        value: new Date(),
+      };
     }
     // 一つ前のメッセージの日付と比較
     const previousDate = new Date(previousMessage.time);
     const currentDate = new Date(currentMessage.time);
-    return (
+    const judge =
       previousDate.getFullYear() !== currentDate.getFullYear() ||
       previousDate.getMonth() !== currentDate.getMonth() ||
-      previousDate.getDate() !== currentDate.getDate()
+      previousDate.getDate() !== currentDate.getDate();
+    console.log(
+      "previousDate",
+      previousDate.toDateString(),
+      "currentDate",
+      currentDate.toDateString(),
+      "judge",
+      judge,
     );
+
+    return {
+      judge: judge,
+      value: previousDate,
+    };
   };
 </script>
 
@@ -377,129 +403,134 @@
       <div class="flex flex-col-reverse w-full">
         {#each $chatStore.historyData.history as message (message.messageId)}
           {#if message.userId !== "SYSTEM"}
-            {#if isDateChanged(message)}
-              <div class="flex items-center justify-center my-4">
-                <hr class="border-t border-gray-300 w-full" />
-                <span class="px-2 text-gray-500 text-sm">
-                  {new Date(message.time).toLocaleDateString("ja-JP", {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                  })}
-                </span>
-                <hr class="border-t border-gray-300 w-full" />
-              </div>
-            {/if}
-            <div class="flex items-start mb-4 gap-2 w-[calc(100%-64px)]">
-              <img
-                src={getAvatarUrl(message.userId)}
-                alt="Avatar"
-                class="w-8 h-8 rounded-full object-cover"
-              />
-              <div class="flex flex-col w-full">
-                <div class="flex items-center">
-                  <p class="font-bold">{getUserName(message.userId)}</p>
-                  <p class="text-gray-500 text-sm ml-2">
-                    {new Date(message.time).toLocaleString("ja-JP", {
-                      year: "numeric",
-                      month: "2-digit",
-                      day: "2-digit",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </p>
-                </div>
-                <div class=" p-2 rounded-lg break-words whitespace-pre-wrap">
-                  {@html linkify(message.content)}
-                </div>
+            <div>
+              <div class="flex items-start mb-4 gap-2 w-[calc(100%-64px)]">
+                <img
+                  src={getAvatarUrl(message.userId)}
+                  alt="Avatar"
+                  class="w-8 h-8 rounded-full object-cover"
+                />
+                <div class="flex flex-col w-full">
+                  <div class="flex items-center">
+                    <p class="font-bold">{getUserName(message.userId)}</p>
+                    <p class="text-gray-500 text-sm ml-2">
+                      {new Date(message.time).toLocaleString("ja-JP", {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  </div>
+                  <div class=" p-2 rounded-lg break-words whitespace-pre-wrap">
+                    {@html linkify(message.content)}
+                  </div>
 
-                {#if message.linkData && Object.keys(message.linkData).length > 0}
-                  <div class="mt-2 p-2 border rounded-lg">
-                    {#each Object.values(message.linkData) as link}
-                      {#if link.contentType === "text/html"}
-                        <div class="md:flex flex-row">
+                  {#if message.linkData && Object.keys(message.linkData).length > 0}
+                    <div class="mt-2 p-2 border rounded-lg">
+                      {#each Object.values(message.linkData) as link}
+                        {#if link.contentType === "text/html"}
+                          <div class="md:flex flex-row">
+                            <div
+                              class="md:ml-4 md:flex-grow md:min-w-0 md:basis-1/2"
+                            >
+                              <a
+                                href={link.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="text-blue-700 md:flex-shrink-0"
+                              >
+                                <img
+                                  src={link.favicon}
+                                  alt="Favicon"
+                                  class="inline w-4 h-4 mr-1"
+                                />
+                                {link.title}
+                              </a>
+                              <div class="md:ml-4 md:flex-grow md:min-w-0">
+                                <p class="break-words">{link.description}</p>
+                              </div>
+                            </div>
+                            {#if link.images && link.images.length > 0}
+                              <div
+                                class="h-30 sm:h-20 md:h-40 md:w-fit overflow-hidden md:ml-4"
+                              >
+                                <img
+                                  src={link.images[0].url}
+                                  alt={`Preview image for ${link.title}`}
+                                  class="mt-2 w-full h-full object-cover rounded-lg"
+                                />
+                              </div>
+                            {/if}
+                          </div>
+                        {/if}
+                        {#if link.contentType === "image"}
                           <div
-                            class="md:ml-4 md:flex-grow md:min-w-0 md:basis-1/2"
+                            class="h-30 sm:h-20 md:h-40 md:w-40 overflow-hidden"
                           >
                             <a
                               href={link.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              class="text-blue-700 md:flex-shrink-0"
                             >
                               <img
-                                src={link.favicon}
-                                alt="Favicon"
-                                class="inline w-4 h-4 mr-1"
-                              />
-                              {link.title}
-                            </a>
-                            <div class="md:ml-4 md:flex-grow md:min-w-0">
-                              <p class="break-words">{link.description}</p>
-                            </div>
-                          </div>
-                          {#if link.images && link.images.length > 0}
-                            <div
-                              class="h-30 sm:h-20 md:h-40 md:w-fit overflow-hidden md:ml-4"
-                            >
-                              <img
-                                src={link.images[0].url}
-                                alt={`Preview image for ${link.title}`}
+                                src={link.url}
+                                alt={`Preview image for`}
                                 class="mt-2 w-full h-full object-cover rounded-lg"
                               />
-                            </div>
-                          {/if}
-                        </div>
-                      {/if}
-                      {#if link.contentType === "image"}
-                        <div
-                          class="h-30 sm:h-20 md:h-40 md:w-40 overflow-hidden"
-                        >
-                          <a
-                            href={link.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <img
-                              src={link.url}
-                              alt={`Preview image for`}
-                              class="mt-2 w-full h-full object-cover rounded-lg"
-                            />
-                          </a>
-                        </div>
-                      {/if}
-                      {#if link.contentType === "video"}
-                        <div>
-                          <a
-                            href={link.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <video
-                              controls
-                              class="mt-2 w-full h-auto rounded-lg"
+                            </a>
+                          </div>
+                        {/if}
+                        {#if link.contentType === "video"}
+                          <div>
+                            <a
+                              href={link.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
                             >
-                              <source src={link.url} type={link.mediaType} />
-                              <track
-                                kind="captions"
-                                src="path/to/captions.vtt"
-                                srclang="jp"
-                                label="Japanese captions"
-                                default
-                              />
-                            </video>
-                          </a>
-                        </div>
-                      {/if}
-                    {/each}
-                  </div>
-                {/if}
+                              <video
+                                controls
+                                class="mt-2 w-full h-auto rounded-lg"
+                              >
+                                <source src={link.url} type={link.mediaType} />
+                                <track
+                                  kind="captions"
+                                  src="path/to/captions.vtt"
+                                  srclang="jp"
+                                  label="Japanese captions"
+                                  default
+                                />
+                              </video>
+                            </a>
+                          </div>
+                        {/if}
+                      {/each}
+                    </div>
+                  {/if}
 
-                <!-- ファイルデータ表示 -->
-                {#if message.fileId.length !== 0}
-                  <FilePreview fileId={message.fileId} />
-                {/if}
+                  <!-- ファイルデータ表示 -->
+                  {#if message.fileId.length !== 0}
+                    <FilePreview fileId={message.fileId} />
+                  {/if}
+                </div>
               </div>
+              {#if isDateChanged(message).judge}
+                <div class="flex items-center justify-center my-4">
+                  <hr class="border-t border-gray-300 w-full" />
+                  <span class="px-2 text-gray-500 text-sm">
+                    {new Date(isDateChanged(message).value).toLocaleDateString(
+                      "ja-JP",
+                      {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                      },
+                    )}
+                  </span>
+                  <hr class="border-t border-gray-300 w-full" />
+                </div>
+              {/if}
             </div>
           {/if}
         {/each}
@@ -510,7 +541,7 @@
   </div>
 
   <div id="messageInput" class="flex p-2">
-    <MessageInput on:send={sendMessage} />
+    <MessageInput on:send={sendMessage} {channelId} />
   </div>
 
   <!-- 最新画面に戻るボタン -->

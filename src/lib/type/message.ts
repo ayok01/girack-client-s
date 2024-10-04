@@ -1,4 +1,4 @@
-export default interface IMessage {
+export interface IMessage {
   messageId: string;
   channelId: string;
   userId: string;
@@ -65,4 +65,9 @@ export interface IChatHistory {
     atTop: boolean;
     atEnd: boolean;
   };
+}
+
+export interface IInputMessage {
+  message: string;
+  fileId: string[] | null;
 }

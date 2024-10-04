@@ -44,11 +44,11 @@
       document.cookie =
         "userId=" +
         dat.data.UserInfo.userId +
-        "; SameSite=strict; Max-Age=1296000";
+        ";SameSite=None; Max-Age=1296000; secure";
       document.cookie =
         "sessionId=" +
         dat.data.sessionId +
-        "; SameSite=strict; Max-Age=1296000";
+        ";SameSite=None;  Max-Age=1296000; secure";
 
       // チャンネル情報とチャンネル一覧を取得するイベントを発火
       socket.emit("fetchUserInfo", {
