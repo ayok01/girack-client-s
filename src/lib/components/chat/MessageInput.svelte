@@ -95,14 +95,14 @@
   const adjustTextareaHeight = () => {
     console.log("adjustTextareaHeight", textarea);
     if (textarea) {
-      textarea.style.height = "12px"; // 一旦高さをリセット
+      textarea.style.height = "42px"; // 一旦高さをリセット
       textarea.style.height = Math.min(textarea.scrollHeight, 200) + "px"; // 最大200pxまで広げる
     }
   };
 
   const clickSendAdjustTextareaHeight = () => {
     if (textarea) {
-      textarea.style.height = "40px"; // 高さをリセット
+      textarea.style.height = "42px"; // 高さをリセット
     }
   };
 
@@ -190,7 +190,7 @@
       <textarea
         bind:value={message}
         placeholder="メッセージを入力"
-        class="p-2 border rounded-lg resize-none h-10 w-full"
+        class="p-2 border rounded-lg resize-none h-10 w-full text-sm"
         on:keydown={handleKeyDown}
         bind:this={textarea}
         on:input={adjustTextareaHeight}
