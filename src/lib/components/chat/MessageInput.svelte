@@ -5,6 +5,7 @@
   import { get } from "svelte/store";
   import { PUBLIC_BACKEND_ADDRESS } from "$env/static/public";
   import type { IInputMessage } from "$lib/type/message";
+  import { text } from "@sveltejs/kit";
   const apiUrl = `${PUBLIC_BACKEND_ADDRESS}`;
 
   let message = ""; //メッセージ入力用
@@ -15,6 +16,7 @@
   const dispatch = createEventDispatcher();
 
   const sendMessage = async () => {
+    console.log("sendMessage");
     // メッセージが空文字または改行だけの場合は無視
     if (message.trim() === "" && selectedFiles.length === 0) {
       return;
@@ -35,7 +37,7 @@
     dispatch("send", messageToSend);
     message = ""; // メッセージをリセット
     selectedFiles = []; // ファイルをリセット
-    adjustTextareaHeight(); // メッセージ送信後に高さをリセット
+    clickSendAdjustTextareaHeight(); // メッセージ送信後に高さをリセット
   };
 
   const uploadFile = (file: File): Promise<string | null> => {
@@ -91,9 +93,16 @@
   };
 
   const adjustTextareaHeight = () => {
+    console.log("adjustTextareaHeight", textarea);
     if (textarea) {
-      textarea.style.height = "10px"; // 一旦高さをリセット
+      textarea.style.height = "12px"; // 一旦高さをリセット
       textarea.style.height = Math.min(textarea.scrollHeight, 200) + "px"; // 最大200pxまで広げる
+    }
+  };
+
+  const clickSendAdjustTextareaHeight = () => {
+    if (textarea) {
+      textarea.style.height = "40px"; // 高さをリセット
     }
   };
 
@@ -124,7 +133,7 @@
       if (event.key === "Enter") {
         sendMessage();
         event.preventDefault(); // Enterキーのデフォルト動作を防ぐ
-        setTimeout(adjustTextareaHeight, 0);
+        clickSendAdjustTextareaHeight();
       }
     }
   };
@@ -153,7 +162,10 @@
   {/if}
 
   <div class="flex w-full mt-2">
-    <button on:click={triggerFileInput} class="mr-2 p-2 text-white rounded">
+    <button
+      on:click={triggerFileInput}
+      class="mr-2 p-2 text-white rounded bg-neutral"
+    >
       <IconPaperclip size={20} />
       <input
         type="file"
@@ -172,7 +184,17 @@
         bind:this={textarea}
         on:input={adjustTextareaHeight}
       />
-      <button on:click={sendMessage} class="p-2 text-white rounded-lg">
+      <button
+        on:click={sendMessage}
+        class="p-2 text-white rounded-lg bg-neutral {message.trim() === '' &&
+        selectedFiles.length === 0 &&
+        $userStore.channelJoined.includes(channelId)
+          ? 'opacity-50'
+          : ''}"
+        disabled={message.trim() === "" &&
+          selectedFiles.length === 0 &&
+          $userStore.channelJoined.includes(channelId)}
+      >
         <IconSend2 size={20} />
       </button>
     </div>
