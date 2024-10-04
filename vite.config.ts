@@ -42,4 +42,18 @@ export default defineConfig({
       },
     }),
   ],
+  server: {
+    proxy: {
+      "/socket.io": {
+        target: "http://localhost:33333",
+        rewriteWsOrigin: true,
+        ws: true,
+      },
+      "/api": {
+        target: "http://localhost:33333",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ""),
+      },
+    },
+  },
 });
