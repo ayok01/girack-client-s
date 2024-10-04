@@ -16,7 +16,7 @@
   import { channelStore } from "$lib/store/channelStore";
   import type { IChannel } from "$lib/type/channel";
   import type { IMessage, IInputMessage } from "$lib/type/message";
-
+  import { IconTrash } from "@tabler/icons-svelte";
   // リアクティブにパスを取得
   $: path = $page.url.pathname;
   $: channelId = path.split("/").pop()?.toString() || "";
@@ -387,6 +387,20 @@
       value: previousDate,
     };
   };
+
+  /**
+   * メッセージを削除する
+   */
+  const deleteMessage = (message: IMessage) => {
+    socket.emit("deleteMessage", {
+      RequestSender: {
+        userId: $userStore.userId,
+        sessionId: $sessionIdStore,
+      },
+      channelId: message.channelId,
+      messageId: message.messageId,
+    });
+  };
 </script>
 
 <div class="flex flex-col h-[calc(100svh-56px)] mx-auto">
@@ -400,7 +414,9 @@
         {#each $chatStore.historyData.history as message (message.messageId)}
           {#if message.userId !== "SYSTEM"}
             <div>
-              <div class="flex items-start mb-4 gap-2 w-[calc(100%-64px)]">
+              <div
+                class=" message-container flex items-start mb-4 gap-2 w-[calc(100%-32px)]"
+              >
                 <img
                   src={getAvatarUrl(message.userId)}
                   alt="Avatar"
@@ -418,6 +434,14 @@
                         minute: "2-digit",
                       })}
                     </p>
+                    {#if message.userId === $userStore.userId}
+                      <button
+                        class="delete-button ml-auto text-gray-500 hidden hover:text-red-500"
+                        on:click={() => deleteMessage(message)}
+                      >
+                        <IconTrash size={20} />
+                      </button>
+                    {/if}
                   </div>
                   <div class=" p-2 rounded-lg break-words whitespace-pre-wrap">
                     {@html linkify(message.content)}
@@ -553,3 +577,10 @@
     </button>
   {/if} -->
 </div>
+
+<style>
+  .message-container:hover .delete-button,
+  .message-container:focus-within .delete-button {
+    display: block;
+  }
+</style>

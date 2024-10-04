@@ -18,6 +18,7 @@ import fetchHistory from "./message/fetchMessage";
 import fetchUserAll from "./User/fetchUserAll";
 import receiveMessage from "./message/receiveMessage";
 import updateMessage from "./message/updateMessage";
+import deleteMessage from "./message/deleteMessage";
 
 export function loadSocket() {
   console.log("socketInit :: loadSockert : SocketIO接続をロードします");
@@ -31,4 +32,5 @@ export function loadSocket() {
   fetchUserAll(socket); //全ユーザー情報の受け取り
   receiveMessage(socket); //メッセージの受け取り
   updateMessage(socket); //メッセージの更新
+  deleteMessage(socket); //メッセージの削除
 }
