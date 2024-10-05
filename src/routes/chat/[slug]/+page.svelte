@@ -17,6 +17,7 @@
   import type { IChannel } from "$lib/type/channel";
   import type { IMessage, IInputMessage } from "$lib/type/message";
   import { IconTrash } from "@tabler/icons-svelte";
+  import { chatLoadingStore } from "$lib/store/chatLoadingStore";
   // リアクティブにパスを取得
   $: path = $page.url.pathname;
   $: channelId = path.split("/").pop()?.toString() || "";
@@ -205,6 +206,11 @@
 
   const scroolBottom = async () => {
     // ページ遷移時にスクロール位置を一番下に設定
+    //chatLoadingStoreがfalseになるまで待機
+    while (get(chatLoadingStore)) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+    await tick();
     console.log("DOM更新完了");
     const chatContainer = document.getElementById("chatContainer");
     console.log("chatContainer", chatContainer);
