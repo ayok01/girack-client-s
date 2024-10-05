@@ -7,46 +7,30 @@
   import { onDestroy, onMount } from "svelte";
   import { get } from "svelte/store";
   import ImageViewer from "../ImageViewer.svelte";
+  import { chatLoadingStore } from "$lib/store/chatLoadingStore";
 
   export let fileId: string[];
 
-  //モーダル表示用のbool値と初期化用関数セット
   let displayImageViewer = {
     value: false,
     reset: () => (displayImageViewer.value = false),
   };
-  //画像ビューワー用URL
   let activeImageUrlViewing = "";
-
-  //ファイル情報格納用
-  let fileDatas: {
-    [key: string]: IFile;
-  } = {};
+  let fileDatas: { [key: string]: IFile } = {};
 
   $: fileDatas;
 
-  /**
-   * ファイル情報の受け取り
-   * @param dat
-   */
   const SOCKETfetchFileInfo = (dat: {
     result: string;
-    data: {
-      fileId: string;
-      fileInfo: IFile | null;
-    };
+    data: { fileId: string; fileInfo: IFile | null };
   }) => {
-    //console.log("FilePreview :: SOCKETfetchFileInfo : dat->", dat);
     if (dat.data.fileInfo !== null) {
-      //ファイル情報を格納する
       fileDatas[dat.data.fileId] = dat.data.fileInfo;
     }
   };
 
   onMount(() => {
     socket.on("RESULT::fetchFileInfo", SOCKETfetchFileInfo);
-
-    //ファイルIdごとに情報取得
     for (const id of fileId) {
       socket.emit("fetchFileInfo", {
         RequestSender: {
@@ -56,11 +40,68 @@
         fileId: id,
       });
     }
+
+    for (const id of fileId) {
+      loadingImage(id);
+    }
   });
 
   onDestroy(() => {
     socket.off("RESULT::fetchFileInfo", SOCKETfetchFileInfo);
   });
+
+  async function handleImageClick(id: string) {
+    const userId = get(userStore).userId;
+    const sessionId = get(sessionIdStore);
+    const url = `${PUBLIC_BACKEND_ADDRESS}/downloadfile/${id}`;
+
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "x-user-id": userId,
+          "x-session-id": sessionId,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch image");
+      }
+
+      const blob = await response.blob();
+      activeImageUrlViewing = URL.createObjectURL(blob);
+      displayImageViewer.value = true;
+    } catch (error) {
+      console.error("Error fetching the file:", error);
+    }
+  }
+
+  async function loadingImage(id: string) {
+    chatLoadingStore.set(true);
+    const userId = get(userStore).userId;
+    const sessionId = get(sessionIdStore);
+    const url = `${PUBLIC_BACKEND_ADDRESS}/downloadfile/${id}`;
+
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "x-user-id": userId,
+          "x-session-id": sessionId,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch image");
+      }
+
+      const blob = await response.blob();
+      activeImageUrlViewing = URL.createObjectURL(blob);
+    } catch (error) {
+      console.error("Error fetching the file:", error);
+    }
+    chatLoadingStore.set(false);
+  }
 </script>
 
 {#if displayImageViewer.value}
@@ -70,20 +111,19 @@
   {#each fileId as id}
     <div>
       {#if fileDatas[id]?.type.startsWith("image/")}
-        <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <img
-          on:click={() => {
-            activeImageUrlViewing =
-              PUBLIC_BACKEND_ADDRESS + "/downloadfile/" + id;
-            displayImageViewer.value = true;
-          }}
-          class="w-auto rounded md:max-h-36 max-h-24 cursor-pointer"
-          alt={"画像 : " + id}
-          src={fileDatas[id]?.type.startsWith("image/")
-            ? PUBLIC_BACKEND_ADDRESS + "/downloadfile/" + id
-            : null}
-        />
+        {#if fileDatas[id]?.id}
+          <button
+            on:click={() => handleImageClick(id)}
+            class="w-auto rounded md:max-h-36 max-h-24 cursor-pointer"
+            aria-label={"画像 : " + id}
+          >
+            <img
+              class="w-auto rounded md:max-h-36 max-h-24"
+              alt={"画像 : " + id}
+              src={activeImageUrlViewing}
+            />
+          </button>
+        {/if}
       {:else}
         <div
           class="card bg-base-200 py-2 px-3 flex gap-2 flex-row flex-wrap items-center"
