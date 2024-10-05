@@ -210,7 +210,9 @@
 <div class="flex flex-col w-full">
   <div class="file-preview-list flex gap-2">
     {#if mentionListVisible}
-      <div class="relative flex flex-col gap-2 mb-2 border w-full">
+      <div
+        class="relative flex flex-col gap-2 mb-2 border w-full max-h-32 overflow-y-auto"
+      >
         {#each filteredUserList as user, index}
           <button
             class="p-2 text-left w-full flex items-center gap-2 {index ===
