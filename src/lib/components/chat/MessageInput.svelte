@@ -13,7 +13,10 @@
   import { getAvatarUrl } from "$lib/repository/fileRepository";
   const apiUrl = `${PUBLIC_BACKEND_ADDRESS}`;
 
-  let userList: { [key: string]: IUserinfo } = $userListStore;
+  let userList: { [key: string]: IUserinfo } = {};
+  userListStore.subscribe((users) => {
+    userList = users;
+  });
   let message = ""; //メッセージ入力用
   let textarea: HTMLTextAreaElement;
   let selectedFiles: File[] = []; // 選択されたファイルを保持
@@ -176,10 +179,12 @@
     const mentionIndex = textBeforeCursor.lastIndexOf("@");
 
     if (mentionIndex !== -1) {
+      console.log("mentionIndex", mentionIndex);
       mentionQuery = textBeforeCursor.slice(mentionIndex + 1);
       filteredUserList = Object.values(userList).filter((user) =>
         user.userName.toLowerCase().includes(mentionQuery.toLowerCase()),
       );
+      console.log("filteredUserList", filteredUserList);
       mentionListVisible = filteredUserList.length > 0;
     } else {
       mentionListVisible = false;
@@ -228,25 +233,26 @@
           </button>
         {/each}
       </div>
+    {:else}
+      {#each selectedFiles as file}
+        <div class="file-preview-item relative flex items-center mb-2">
+          {#if file.type.startsWith("image/")}
+            <img
+              src={URL.createObjectURL(file)}
+              alt={file.name}
+              class="file-preview-image max-w-12 max-h-12 mr-2"
+            />
+            <button
+              on:click={() => removeFile(file)}
+              class="remove-icon absolute top-0 right-0 m-1 text-red-500"
+              aria-label="削除"
+            >
+              ✖️
+            </button>
+          {/if}
+        </div>
+      {/each}
     {/if}
-    {#each selectedFiles as file}
-      <div class="file-preview-item relative flex items-center mb-2">
-        {#if file.type.startsWith("image/")}
-          <img
-            src={URL.createObjectURL(file)}
-            alt={file.name}
-            class="file-preview-image max-w-12 max-h-12 mr-2"
-          />
-          <button
-            on:click={() => removeFile(file)}
-            class="remove-icon absolute top-0 right-0 m-1 text-red-500"
-            aria-label="削除"
-          >
-            ✖️
-          </button>
-        {/if}
-      </div>
-    {/each}
   </div>
 
   <div class="flex w-full mt-2">
