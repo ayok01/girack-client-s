@@ -33,8 +33,7 @@
     for (const cookie of cookies) {
       const eqPos = cookie.indexOf("=");
       const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie;
-      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/user; domain=${location.hostname}`;
-      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${location.hostname}`;
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT;`;
     }
   };
   // ローカルストレージを削除する関数
@@ -74,6 +73,7 @@
         location.reload();
       } else {
         console.error("クッキーまたはローカルストレージの削除に失敗しました。");
+        location.reload();
       }
     }, 1000);
   };

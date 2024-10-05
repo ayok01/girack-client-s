@@ -165,52 +165,54 @@
   <slot />
 </div>
 
-<aside
-  id="default-sidebar"
-  class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0"
-  aria-label="Sidebar"
-  aria-modal="true"
-  role="dialog"
->
-  <div class="flex flex-col h-full px-3 py-4 bg-gray-50 dark:bg-gray-800">
-    <span class="ms-3">
-      <a href="/chat" on:click={sidebarCloseButtonClick}>チャンネル一覧</a>
-    </span>
-    <div class="flex-grow overflow-y-auto">
-      <ul class="space-y-2 font-medium">
-        {#each $channelStore as channel}
-          {#if $userStore.channelJoined.includes(channel.channelId)}
-            <li>
-              <a
-                href={`/chat/${channel.channelId}`}
-                on:click={sidebarCloseButtonClick}
-                class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-              >
-                <span class="flex-1 ms-3 whitespace-nowrap"
-                  >{channel.channelName}</span
+{#if !$page.route.id?.startsWith("/auth")}
+  <aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+    aria-modal="true"
+    role="dialog"
+  >
+    <div class="flex flex-col h-full px-3 py-4 bg-gray-50 dark:bg-gray-800">
+      <span class="ms-3">
+        <a href="/chat" on:click={sidebarCloseButtonClick}>チャンネル一覧</a>
+      </span>
+      <div class="flex-grow overflow-y-auto">
+        <ul class="space-y-2 font-medium">
+          {#each $channelStore as channel}
+            {#if $userStore.channelJoined.includes(channel.channelId)}
+              <li>
+                <a
+                  href={`/chat/${channel.channelId}`}
+                  on:click={sidebarCloseButtonClick}
+                  class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
                 >
-              </a>
-            </li>
-          {/if}
-        {/each}
-      </ul>
+                  <span class="flex-1 ms-3 whitespace-nowrap"
+                    >{channel.channelName}</span
+                  >
+                </a>
+              </li>
+            {/if}
+          {/each}
+        </ul>
+      </div>
+      <div class="mt-4">
+        <a
+          on:click={sidebarCloseButtonClick}
+          href={`/user/${$userStore.userId}`}
+          class="flex items-center gap-2"
+        >
+          <img
+            src={getAvatarUrl($userStore.userId)}
+            alt="Avatar"
+            class="w-8 h-8 rounded-full object-cover"
+          />
+          <div>
+            <p class="font-bold">{$userStore.userName}</p>
+            <p class="text-sm text-gray-500">{$userStore.userId}</p>
+          </div>
+        </a>
+      </div>
     </div>
-    <div class="mt-4">
-      <a
-        on:click={sidebarCloseButtonClick}
-        href={`/user/${$userStore.userId}`}
-        class="flex items-center gap-2"
-      >
-        <img
-          src={getAvatarUrl($userStore.userId)}
-          alt="Avatar"
-          class="w-8 h-8 rounded-full object-cover"
-        />
-        <div>
-          <p class="font-bold">{$userStore.userName}</p>
-          <p class="text-sm text-gray-500">{$userStore.userId}</p>
-        </div>
-      </a>
-    </div>
-  </div>
-</aside>
+  </aside>
+{/if}
