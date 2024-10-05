@@ -282,7 +282,7 @@
       <textarea
         bind:value={message}
         placeholder="メッセージを入力"
-        class="p-2 border rounded-lg resize-none h-10 w-full text-sm"
+        class="p-2 border rounded-lg resize-none h-10 w-full"
         on:keydown={handleKeyDown}
         bind:this={textarea}
         on:input={handleInput}
