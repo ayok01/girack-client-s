@@ -312,7 +312,7 @@
       const placeholder = `__PLACEHOLDER_${placeholderIndex++}__`;
       placeholders.push({
         placeholder,
-        content: `<pre class="bg-gray-100 p-2 rounded"><code>${code}</code>`,
+        content: `<pre class="overflow-x-auto bg-gray-100 p-2 rounded"><code>${code}</code>`,
       });
       return placeholder;
     });
@@ -322,7 +322,7 @@
       const placeholder = `__PLACEHOLDER_${placeholderIndex++}__`;
       placeholders.push({
         placeholder,
-        content: `<code class="bg-gray-100 p-1 rounded">${code}</code>`,
+        content: `<code class=" bg-gray-100 p-1 rounded">${code}</code>`,
       });
       return placeholder;
     });
