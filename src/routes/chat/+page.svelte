@@ -87,9 +87,7 @@
 <div class="flex flex-col h-[calc(100svh-56px)] mx-auto container mx-auto p-4">
   <ul class="space-y-4 overflow-y-auto h-full">
     {#each $channelStore as channel}
-      <li
-        class="p-4 bg-white rounded shadow-md flex items-center justify-between"
-      >
+      <li class="p-4 rounded shadow-md flex items-center justify-between">
         <!-- svelte-ignore a11y-interactive-supports-focus -->
         <!-- svelte-ignore a11y-click-events-have-key-events -->
         <div

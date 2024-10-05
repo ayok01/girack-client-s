@@ -15,10 +15,12 @@
 </script>
 
 <dialog id="modal_image_viewer" class="modal">
-  <div class="md:h-[90%] h-[80%] flex flex-col item-center justify-center">
+  <div
+    class="md:h-[90%] h-[80%] flex flex-col items-center justify-center overflow-hidden"
+  >
     <img
       class="rounded mx-auto"
-      style="max-height:90%; max-width:90%;"
+      style="max-height:100%; max-width:100%; object-fit:contain;"
       alt={imageURL}
       src={imageURL}
     />

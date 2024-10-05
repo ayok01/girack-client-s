@@ -210,6 +210,7 @@
     while (get(chatLoadingStore)) {
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
+    await tick();
     console.log("DOM更新完了");
     const chatContainer = document.getElementById("chatContainer");
     console.log("chatContainer", chatContainer);
