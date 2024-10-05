@@ -1,23 +1,32 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  import { userStore, sessionIdStore } from "$lib/store/userInfoStore";
+  import {
+    userStore,
+    sessionIdStore,
+    userListStore,
+  } from "$lib/store/userInfoStore";
   import { IconSend2, IconPaperclip } from "@tabler/icons-svelte";
   import { get } from "svelte/store";
   import { PUBLIC_BACKEND_ADDRESS } from "$env/static/public";
   import type { IInputMessage } from "$lib/type/message";
-  import { text } from "@sveltejs/kit";
+  import type { IUserinfo } from "$lib/type/user";
+  import { getAvatarUrl } from "$lib/repository/fileRepository";
   const apiUrl = `${PUBLIC_BACKEND_ADDRESS}`;
 
+  let userList: { [key: string]: IUserinfo } = $userListStore;
   let message = ""; //メッセージ入力用
   let textarea: HTMLTextAreaElement;
   let selectedFiles: File[] = []; // 選択されたファイルを保持
   export let channelId: string = "dummyChannelName";
+  let mentionListVisible = false;
+  let mentionQuery = "";
+  let filteredUserList: IUserinfo[] = [];
+  let selectedUserIndex = -1; // 選択されたユーザーのインデックスを保持
 
   const dispatch = createEventDispatcher();
 
   const sendMessage = async () => {
     console.log("sendMessage");
-    // メッセージが空文字または改行だけの場合は無視
     if (message.trim() === "" && selectedFiles.length === 0) {
       return;
     }
@@ -109,13 +118,11 @@
   const handleKeyDown = (event: KeyboardEvent) => {
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     if (isMobile) {
-      // スマホの場合はEnterキーで改行
       if (event.key === "Enter" && !event.shiftKey) {
         setTimeout(adjustTextareaHeight, 0); // 改行後に高さを調整
         return;
       }
     } else {
-      //変換の場合は無視
       if (
         navigator.platform.toUpperCase().indexOf("MAC") >= 0 &&
         event.keyCode === 229
@@ -125,15 +132,31 @@
       if (event.key === "Enter" && event.ctrlKey) {
         return;
       }
-      // Shift + Enterで改行を追加
       if (event.key === "Enter" && event.shiftKey) {
         setTimeout(adjustTextareaHeight, 0); // 改行後に高さを調整
         return;
       }
       if (event.key === "Enter") {
-        sendMessage();
-        event.preventDefault(); // Enterキーのデフォルト動作を防ぐ
-        clickSendAdjustTextareaHeight();
+        if (mentionListVisible && selectedUserIndex >= 0) {
+          selectUser(filteredUserList[selectedUserIndex]);
+          event.preventDefault();
+        } else {
+          sendMessage();
+          event.preventDefault(); // Enterキーのデフォルト動作を防ぐ
+          clickSendAdjustTextareaHeight();
+        }
+      } else if (event.key === "ArrowDown") {
+        if (mentionListVisible) {
+          selectedUserIndex = (selectedUserIndex + 1) % filteredUserList.length;
+          event.preventDefault();
+        }
+      } else if (event.key === "ArrowUp") {
+        if (mentionListVisible) {
+          selectedUserIndex =
+            (selectedUserIndex - 1 + filteredUserList.length) %
+            filteredUserList.length;
+          event.preventDefault();
+        }
       }
     }
   };
@@ -145,32 +168,86 @@
   const removeFile = (fileToRemove: File) => {
     selectedFiles = selectedFiles.filter((file) => file !== fileToRemove);
   };
+
+  const handleInput = (event: Event) => {
+    const input = event.target as HTMLTextAreaElement;
+    const cursorPosition = input.selectionStart;
+    const textBeforeCursor = input.value.slice(0, cursorPosition);
+    const mentionIndex = textBeforeCursor.lastIndexOf("@");
+
+    if (mentionIndex !== -1) {
+      mentionQuery = textBeforeCursor.slice(mentionIndex + 1);
+      filteredUserList = Object.values(userList).filter((user) =>
+        user.userName.toLowerCase().includes(mentionQuery.toLowerCase()),
+      );
+      mentionListVisible = filteredUserList.length > 0;
+    } else {
+      mentionListVisible = false;
+    }
+  };
+
+  const selectUser = (user: IUserinfo) => {
+    const cursorPosition = textarea.selectionStart;
+    const textBeforeCursor = message.slice(0, cursorPosition);
+    const mentionIndex = textBeforeCursor.lastIndexOf("@");
+
+    if (mentionIndex !== -1) {
+      message =
+        message.slice(0, mentionIndex) +
+        `@<${user.userId}>` +
+        message.slice(cursorPosition);
+      mentionListVisible = false;
+    }
+  };
 </script>
 
 <div class="flex flex-col w-full">
-  <!-- ファイルプレビューリスト -->
-  {#if selectedFiles.length > 0}
-    <div class="file-preview-list mt-2 flex gap-2">
-      {#each selectedFiles as file}
-        <div class="file-preview-item relative flex items-center mb-2">
-          {#if file.type.startsWith("image/")}
+  <div class="file-preview-list mt-2 flex gap-2">
+    {#if mentionListVisible}
+      <div class="relative flex flex-col gap-2 mb-2 border w-full">
+        {#each filteredUserList as user, index}
+          <button
+            class="p-2 text-left w-full flex items-center gap-2 {index ===
+            selectedUserIndex
+              ? 'bg-gray-200'
+              : ''}"
+            on:click={() => selectUser(user)}
+            on:keydown={(event) => {
+              if (event.key === "Enter") {
+                selectUser(user);
+              }
+            }}
+            tabindex="0"
+          >
             <img
-              src={URL.createObjectURL(file)}
-              alt={file.name}
-              class="file-preview-image max-w-12 max-h-12 mr-2"
+              src={getAvatarUrl(user.userId)}
+              alt={user.userName}
+              class="w-6 h-6 rounded-full object-cover"
             />
-            <button
-              on:click={() => removeFile(file)}
-              class="remove-icon absolute top-0 right-0 m-1 text-red-500"
-              aria-label="削除"
-            >
-              ✖️
-            </button>
-          {/if}
-        </div>
-      {/each}
-    </div>
-  {/if}
+            {user.userName}
+          </button>
+        {/each}
+      </div>
+    {/if}
+    {#each selectedFiles as file}
+      <div class="file-preview-item relative flex items-center mb-2">
+        {#if file.type.startsWith("image/")}
+          <img
+            src={URL.createObjectURL(file)}
+            alt={file.name}
+            class="file-preview-image max-w-12 max-h-12 mr-2"
+          />
+          <button
+            on:click={() => removeFile(file)}
+            class="remove-icon absolute top-0 right-0 m-1 text-red-500"
+            aria-label="削除"
+          >
+            ✖️
+          </button>
+        {/if}
+      </div>
+    {/each}
+  </div>
 
   <div class="flex w-full mt-2">
     <button
@@ -193,7 +270,7 @@
         class="p-2 border rounded-lg resize-none h-10 w-full text-sm"
         on:keydown={handleKeyDown}
         bind:this={textarea}
-        on:input={adjustTextareaHeight}
+        on:input={handleInput}
       />
       <button
         on:click={sendMessage}
