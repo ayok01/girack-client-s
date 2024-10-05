@@ -94,10 +94,13 @@
   // スクロールイベントを監視する関数
   const handleButtomjudge = () => {
     const chatContainer = document.getElementById("chatContainer");
+
     if (chatContainer) {
-      isAtBottom =
-        chatContainer.scrollTop + chatContainer.clientHeight >=
-        chatContainer.scrollHeight;
+      //chatContainer.scrollTop + chatContainer.clientHeight を四捨五入
+      const scrollHeight = Math.round(
+        chatContainer.scrollTop + chatContainer.clientHeight,
+      );
+      isAtBottom = scrollHeight >= chatContainer.scrollHeight;
     }
   };
 
@@ -561,21 +564,13 @@
   </div>
 
   <div id="messageInput" class="flex p-2">
-    <MessageInput on:send={sendMessage} {channelId} />
+    <MessageInput
+      on:send={sendMessage}
+      {channelId}
+      {isAtBottom}
+      on:scrollToBottom={scrollToLatestMessage}
+    />
   </div>
-
-  <!-- 最新画面に戻るボタン -->
-  <!-- {#if !isAtBottom}
-    <button
-      class="fixed right-4 bg-blue-500 text-white p-2 rounded-full shadow-lg z-50"
-      style="bottom: {messageInputHeight +
-        10 +
-        (window.innerWidth < 640 ? 50 : 0)}px;"
-      on:click={scrollToLatestMessage}
-    >
-      <IconArrowDownSquareFilled size={24} />
-    </button>
-  {/if} -->
 </div>
 
 <style>

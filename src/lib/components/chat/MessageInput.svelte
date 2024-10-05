@@ -21,6 +21,7 @@
   let textarea: HTMLTextAreaElement;
   let selectedFiles: File[] = []; // 選択されたファイルを保持
   export let channelId: string = "dummyChannelName";
+  export let isAtBottom: boolean = true;
   let mentionListVisible = false;
   let mentionQuery = "";
   let filteredUserList: IUserinfo[] = [];
@@ -207,7 +208,7 @@
 </script>
 
 <div class="flex flex-col w-full">
-  <div class="file-preview-list mt-2 flex gap-2">
+  <div class="file-preview-list flex gap-2">
     {#if mentionListVisible}
       <div class="relative flex flex-col gap-2 mb-2 border w-full">
         {#each filteredUserList as user, index}
@@ -233,7 +234,7 @@
           </button>
         {/each}
       </div>
-    {:else}
+    {:else if selectedFiles.length > 0}
       {#each selectedFiles as file}
         <div class="file-preview-item relative flex items-center mb-2">
           {#if file.type.startsWith("image/")}
@@ -252,6 +253,12 @@
           {/if}
         </div>
       {/each}
+    {:else if !isAtBottom}
+      <button
+        class="h-5 w-full text-xs p-1 text-white rounded bg-primary opacity-50"
+        on:click={() => dispatch("scrollToBottom")}
+        >最新のメッセージにもどる</button
+      >
     {/if}
   </div>
 
