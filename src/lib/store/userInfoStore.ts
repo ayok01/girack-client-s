@@ -1,4 +1,4 @@
-import { writable } from "svelte/store";
+import { derived, writable } from "svelte/store";
 import type { IUserinfo } from "$lib/type/user";
 
 const initialUserinfo: IUserinfo = {
@@ -9,6 +9,8 @@ const initialUserinfo: IUserinfo = {
   channelJoined: [],
 };
 
+const initialOnlineUserList: string[] = [];
+
 const initialUserList: { [key: string]: IUserinfo } = {};
 
 export const userListStore = writable<{ [key: string]: IUserinfo }>(
@@ -16,3 +18,4 @@ export const userListStore = writable<{ [key: string]: IUserinfo }>(
 );
 export const userStore = writable<IUserinfo>(initialUserinfo);
 export const sessionIdStore = writable<string>("");
+export const onlineUserListStore = writable<string[]>(initialOnlineUserList);

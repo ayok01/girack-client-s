@@ -68,6 +68,13 @@
         indexPage: "0",
       });
 
+      socket.emit("fetchOnlineUsers", {
+        RequestSender: {
+          userId: dat.data.UserInfo.userId,
+          sessionId: dat.data.sessionId,
+        },
+      });
+
       //リダイレクト情報があるならそのページへ移動、なければトップ
       const redirectTo = $page.url.searchParams.get("redirect");
       if (redirectTo !== null) {

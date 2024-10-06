@@ -3,9 +3,13 @@
   import { browser } from "$app/environment";
   import { page } from "$app/stores";
   import { onMount } from "svelte";
-  import { loadSocket } from "$lib/socketHandler/socketInit";
+  import { loadSocket, socket } from "$lib/socketHandler/socketInit";
   import Header from "$lib/components/Header.svelte";
-  import { userStore } from "$lib/store/userInfoStore";
+  import {
+    userListStore,
+    userStore,
+    onlineUserListStore,
+  } from "$lib/store/userInfoStore";
   import { get } from "svelte/store";
   import { goto } from "$app/navigation";
   import { channelStore } from "$lib/store/channelStore";
@@ -184,6 +188,29 @@
     role="dialog"
   >
     <div class="flex flex-col h-full px-3 py-4 bg-gray-50 dark:bg-gray-800">
+      <!-- オンラインユーザー -->
+      <div class="avatar-group -space-x-6 rtl:space-x-reverse h-10">
+        {#each $onlineUserListStore as onlineUser, index}
+          {#if $userListStore[onlineUser] && index < 10}
+            <div class="avatar">
+              <div class="w-8">
+                <img
+                  src={getAvatarUrl($userListStore[onlineUser].userId)}
+                  alt="Avatar"
+                />
+              </div>
+            </div>
+          {/if}
+        {/each}
+        <div class="avatar placeholder">
+          <div class="bg-neutral text-neutral-content w-8">
+            <span>{$onlineUserListStore.length}</span>
+          </div>
+        </div>
+      </div>
+      <div
+        class="border-b border-gray-200 dark:border-gray-700 mt-2 mb-2"
+      ></div>
       <span class="ms-3">
         <a href="/chat" on:click={sidebarCloseButtonClick}>チャンネル一覧</a>
       </span>

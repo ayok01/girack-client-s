@@ -6,6 +6,7 @@
     userStore,
     sessionIdStore,
     userListStore,
+    onlineUserListStore,
   } from "$lib/store/userInfoStore";
   import { chatStore } from "$lib/store/messageStore";
   import { onMount, tick } from "svelte";
@@ -425,11 +426,15 @@
               <div
                 class=" message-container flex items-start mb-4 gap-2 w-[calc(100%-32px)]"
               >
-                <img
-                  src={getAvatarUrl(message.userId)}
-                  alt="Avatar"
-                  class="w-8 h-8 rounded-full object-cover"
-                />
+                <div
+                  class="avatar {$onlineUserListStore.includes(message.userId)
+                    ? 'online'
+                    : 'offline'}"
+                >
+                  <div class="w-8 rounded-full">
+                    <img src={getAvatarUrl(message.userId)} alt="Avatar" />
+                  </div>
+                </div>
                 <div class="flex flex-col w-full">
                   <div class="flex items-center">
                     <p class="font-bold">{getUserName(message.userId)}</p>

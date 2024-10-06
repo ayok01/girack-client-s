@@ -43,6 +43,13 @@
         indexPage: "0",
       });
 
+      socket.emit("fetchOnlineUsers", {
+        RequestSender: {
+          userId: cookieAuthData.userId,
+          sessionId: cookieAuthData.sessionId,
+        },
+      });
+
       //トップへ移動
       //リダイレクト情報があるならそのページへ移動、なければトップ
       const redirectTo = $page.url.searchParams.get("redirect");

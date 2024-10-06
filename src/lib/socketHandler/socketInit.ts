@@ -19,6 +19,9 @@ import fetchUserAll from "./User/fetchUserAll";
 import receiveMessage from "./message/receiveMessage";
 import updateMessage from "./message/updateMessage";
 import deleteMessage from "./message/deleteMessage";
+import fetchOnlineUsers from "./User/fetchOnlineUsers";
+import addOnlineUser from "./User/addOnlineUser";
+import removeOnlineUser from "./User/removeOnlineUser";
 
 export function loadSocket() {
   console.log("socketInit :: loadSockert : SocketIO接続をロードします");
@@ -33,4 +36,7 @@ export function loadSocket() {
   receiveMessage(socket); //メッセージの受け取り
   updateMessage(socket); //メッセージの更新
   deleteMessage(socket); //メッセージの削除
+  fetchOnlineUsers(socket); //オンラインユーザーの取得
+  addOnlineUser(socket); //オンラインユーザーの追加
+  removeOnlineUser(socket); //オンラインユーザーの削除
 }
