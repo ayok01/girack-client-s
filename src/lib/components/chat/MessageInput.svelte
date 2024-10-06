@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher, onMount } from "svelte";
   import {
     userStore,
     sessionIdStore,
@@ -29,6 +29,29 @@
   let selectedUserIndex = -1; // 選択されたユーザーのインデックスを保持
 
   const dispatch = createEventDispatcher();
+
+  // ペーストイベントを処理する関数
+  const handlePaste = (event: ClipboardEvent) => {
+    const items = event.clipboardData?.items;
+    if (items) {
+      for (const item of items) {
+        if (item.type.startsWith("image/")) {
+          const file = item.getAsFile();
+          if (file) {
+            selectedFiles = [...selectedFiles, file];
+          }
+        }
+      }
+    }
+  };
+
+  // ペーストイベントリスナーを追加
+  onMount(() => {
+    textarea.addEventListener("paste", handlePaste);
+    return () => {
+      textarea.removeEventListener("paste", handlePaste);
+    };
+  });
 
   const sendMessage = async () => {
     console.log("sendMessage");

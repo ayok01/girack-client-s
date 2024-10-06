@@ -18,6 +18,7 @@
   import type { IMessage, IInputMessage } from "$lib/type/message";
   import { IconTrash } from "@tabler/icons-svelte";
   import { chatLoadingStore } from "$lib/store/chatLoadingStore";
+  import { IconStarFilled } from "@tabler/icons-svelte";
   // リアクティブにパスを取得
   $: path = $page.url.pathname;
   $: channelId = path.split("/").pop()?.toString() || "";
@@ -410,6 +411,37 @@
       messageId: message.messageId,
     });
   };
+
+  // リアクションの総数を計算する関数
+  function getTotalReactions(reaction: IMessage["reaction"]): number {
+    let total = 0;
+    for (const emoji in reaction) {
+      if (reaction.hasOwnProperty(emoji)) {
+        for (const user in reaction[emoji]) {
+          if (reaction[emoji].hasOwnProperty(user)) {
+            total += reaction[emoji][user];
+          }
+        }
+      }
+    }
+    return total;
+  }
+
+  // リアクションをつけたユーザーのリストを取得する関数
+  function getReactionUsers(reaction: IMessage["reaction"]): string {
+    const users = new Set<string>();
+    for (const emoji in reaction) {
+      if (reaction.hasOwnProperty(emoji)) {
+        for (const user in reaction[emoji]) {
+          if (reaction[emoji].hasOwnProperty(user)) {
+            const userName = $userListStore[user]?.userName || "Unknown User";
+            users.add(userName);
+          }
+        }
+      }
+    }
+    return Array.from(users).join("\n");
+  }
 </script>
 
 <div class="flex flex-col h-[calc(100svh-56px)] mx-auto">
@@ -546,6 +578,22 @@
                   {#if message.fileId.length !== 0}
                     <FilePreview fileId={message.fileId} />
                   {/if}
+                  <div>
+                    <!-- リアクションがある場合 -->
+                    {#if message.reaction && Object.keys(message.reaction).length > 0}
+                      <div
+                        class="tooltip md:tooltip-right before:w-[5rem] before:content-[attr(data-tip)]"
+                        data-tip={getReactionUsers(message.reaction)}
+                      >
+                        <div
+                          class="p-1 bg-base-200 text-sm rounded-full flex gap-1"
+                        >
+                          <IconStarFilled size={20} />
+                          <div>{getTotalReactions(message.reaction)}</div>
+                        </div>
+                      </div>
+                    {/if}
+                  </div>
                 </div>
               </div>
               {#if isDateChanged(message).judge}
