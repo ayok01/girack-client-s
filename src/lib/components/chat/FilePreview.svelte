@@ -17,7 +17,7 @@
   };
   let activeImageUrlViewing = "";
   let fileDatas: { [key: string]: IFile } = {};
-
+  let fileDeleted: boolean = false;
   $: fileDatas;
 
   const SOCKETfetchFileInfo = (dat: {
@@ -72,7 +72,7 @@
       activeImageUrlViewing = URL.createObjectURL(blob);
       displayImageViewer.value = true;
     } catch (error) {
-      console.error("Error fetching the file:", error);
+      console.warn("Error fetching the file:", error);
     }
   }
 
@@ -98,7 +98,8 @@
       const blob = await response.blob();
       activeImageUrlViewing = URL.createObjectURL(blob);
     } catch (error) {
-      console.error("Error fetching the file:", error);
+      console.warn("Error fetching the file:", error);
+      fileDeleted = true;
     }
     chatLoadingStore.set(false);
   }
@@ -124,6 +125,13 @@
             />
           </button>
         {/if}
+      {:else if fileDeleted}
+        <div
+          class="card bg-base-200 py-2 px-3 flex gap-2 flex-row flex-wrap items-center"
+        >
+          <IconFile />
+          <span>ファイルが削除されています</span>
+        </div>
       {:else}
         <div
           class="card bg-base-200 py-2 px-3 flex gap-2 flex-row flex-wrap items-center"
