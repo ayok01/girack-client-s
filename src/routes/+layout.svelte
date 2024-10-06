@@ -17,18 +17,22 @@
 
   let touchStartX = 0;
   let touchEndX = 0;
+  let touchStartY = 0;
+  let touchEndY = 0;
 
   const handleTouchStart = (event: TouchEvent) => {
     touchStartX = event.changedTouches[0].screenX;
+    touchStartY = event.changedTouches[0].screenY;
   };
 
   const handleTouchEnd = (event: TouchEvent) => {
     touchEndX = event.changedTouches[0].screenX;
+    touchEndY = event.changedTouches[0].screenY;
     handleSwipeGesture();
   };
 
   const handleSwipeGesture = () => {
-    if (touchEndX - touchStartX > 50) {
+    if (touchEndX - touchStartX > 50 && touchStartY - touchEndY < 50) {
       // 右スワイプ
       sidebarButtonClick();
     }
@@ -90,7 +94,14 @@
       }
     }
     if (browser && "serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/service-worker.js");
+      navigator.serviceWorker
+        .register("/service-worker.js", { type: "module" })
+        .then((registration) => {
+          console.info("サービスワーカーを登録しました:", registration.scope);
+        })
+        .catch((error) => {
+          console.error("サービスワーカーが登録できませんでした:", error);
+        });
     }
     loadSocket();
   });

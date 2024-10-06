@@ -1,6 +1,6 @@
 import type { Socket } from "socket.io-client";
 import { chatStore } from "$lib/store/messageStore";
-import type IMessage from "$lib/type/message";
+import type { IMessage } from "$lib/type/message";
 // StoreからチャンネルIDを取得
 let channelId = "";
 chatStore.subscribe((chat) => {
