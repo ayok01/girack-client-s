@@ -11,6 +11,7 @@
   import type { IInputMessage } from "$lib/type/message";
   import type { IUserinfo } from "$lib/type/user";
   import { getAvatarUrl } from "$lib/repository/fileRepository";
+  import { IconFile } from "@tabler/icons-svelte";
   const apiUrl = `${PUBLIC_BACKEND_ADDRESS}`;
 
   let userList: { [key: string]: IUserinfo } = {};
@@ -245,6 +246,19 @@
               alt={file.name}
               class="file-preview-image max-w-12 max-h-12 mr-2"
             />
+            <button
+              on:click={() => removeFile(file)}
+              class="remove-icon absolute top-0 right-0 m-1 text-red-500"
+              aria-label="削除"
+            >
+              ✖️
+            </button>
+          {:else}
+            <div class="file-preview-image max-w-12 max-h-12 mr-2">
+              <IconFile />
+              <!-- 最初の３文字だけ -->
+              {file.name.slice(0, 3) + "..."}
+            </div>
             <button
               on:click={() => removeFile(file)}
               class="remove-icon absolute top-0 right-0 m-1 text-red-500"

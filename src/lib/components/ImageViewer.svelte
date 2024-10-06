@@ -3,7 +3,7 @@
 
   export let imageURL: string;
   export let displayImageViewer: {
-    value: boolean; //表示するかどうかの変数
+    value: string | null; //表示するかどうかの変数
     reset: () => void; //表示変数初期化用
   };
 

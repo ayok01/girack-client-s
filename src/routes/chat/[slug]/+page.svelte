@@ -12,7 +12,6 @@
   import { getAvatarUrl } from "$lib/repository/fileRepository";
   import FilePreview from "$lib/components/chat/FilePreview.svelte";
   import MessageInput from "$lib/components/chat/MessageInput.svelte";
-  import { IconArrowDownSquareFilled } from "@tabler/icons-svelte";
   import { channelStore } from "$lib/store/channelStore";
   import type { IChannel } from "$lib/type/channel";
   import type { IMessage, IInputMessage } from "$lib/type/message";

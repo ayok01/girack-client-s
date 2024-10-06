@@ -11,11 +11,15 @@
 
   export let fileId: string[];
 
-  let displayImageViewer = {
-    value: false,
-    reset: () => (displayImageViewer.value = false),
+  let displayImageViewer: {
+    value: string | null;
+    reset: () => void;
+  } = {
+    value: null,
+    reset: () => (displayImageViewer.value = null),
   };
-  let activeImageUrlViewing = "";
+  let activeImageBlob: { [key: string]: Blob } = {}; //もしPropで渡す場合はこちらを使う
+  let activeImageUrlViewing: { [key: string]: string } = {};
   let fileDatas: { [key: string]: IFile } = {};
   let fileDeleted: boolean = false;
   $: fileDatas;
@@ -42,7 +46,15 @@
     }
 
     for (const id of fileId) {
-      loadingImage(id);
+      const url = loadingImage(id);
+      url.then((res) => {
+        console.log(res);
+        if (res !== null) {
+          activeImageUrlViewing[id] = URL.createObjectURL(res);
+        } else {
+          fileDeleted = true;
+        }
+      });
     }
   });
 
@@ -50,33 +62,11 @@
     socket.off("RESULT::fetchFileInfo", SOCKETfetchFileInfo);
   });
 
-  async function handleImageClick(id: string) {
-    const userId = get(userStore).userId;
-    const sessionId = get(sessionIdStore);
-    const url = `${PUBLIC_BACKEND_ADDRESS}/downloadfile/${id}`;
+  const handleImageClick = async (id: string) => {
+    displayImageViewer.value = id;
+  };
 
-    try {
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "x-user-id": userId,
-          "x-session-id": sessionId,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch image");
-      }
-
-      const blob = await response.blob();
-      activeImageUrlViewing = URL.createObjectURL(blob);
-      displayImageViewer.value = true;
-    } catch (error) {
-      console.warn("Error fetching the file:", error);
-    }
-  }
-
-  async function loadingImage(id: string) {
+  const loadingImage = async (id: string): Promise<Blob | null> => {
     chatLoadingStore.set(true);
     const userId = get(userStore).userId;
     const sessionId = get(sessionIdStore);
@@ -96,17 +86,21 @@
       }
 
       const blob = await response.blob();
-      activeImageUrlViewing = URL.createObjectURL(blob);
+      return blob;
     } catch (error) {
       console.warn("Error fetching the file:", error);
-      fileDeleted = true;
+      return null;
+    } finally {
+      chatLoadingStore.set(false);
     }
-    chatLoadingStore.set(false);
-  }
+  };
 </script>
 
 {#if displayImageViewer.value}
-  <ImageViewer imageURL={activeImageUrlViewing} {displayImageViewer} />
+  <ImageViewer
+    imageURL={activeImageUrlViewing[displayImageViewer.value]}
+    {displayImageViewer}
+  />
 {/if}
 <div class="flex flex-col gap-2">
   {#each fileId as id}
@@ -121,7 +115,7 @@
             <img
               class="w-auto rounded md:max-h-36 max-h-24"
               alt={"画像 : " + id}
-              src={activeImageUrlViewing}
+              src={activeImageUrlViewing[id]}
             />
           </button>
         {/if}
