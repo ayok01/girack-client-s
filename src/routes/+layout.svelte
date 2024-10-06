@@ -10,7 +10,6 @@
   import { goto } from "$app/navigation";
   import { channelStore } from "$lib/store/channelStore";
   import { getAvatarUrl } from "$lib/repository/fileRepository";
-  import { IconAlignJustified } from "@tabler/icons-svelte";
   import { pwaAssetsHead } from "virtual:pwa-assets/head";
   import { pwaInfo } from "virtual:pwa-info";
   $: webManifestLink = pwaInfo ? pwaInfo.webManifest.linkTag : "";
