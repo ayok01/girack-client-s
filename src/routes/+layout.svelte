@@ -222,7 +222,10 @@
                 <a
                   href={`/chat/${channel.channelId}`}
                   on:click={sidebarCloseButtonClick}
-                  class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                  class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group {channel.channelId ===
+                  $page.url.pathname.split('/').pop()
+                    ? 'bg-gray-100 dark:bg-gray-700'
+                    : ''}"
                 >
                   <span class="flex-1 ms-3 whitespace-nowrap"
                     >{channel.channelName}</span
